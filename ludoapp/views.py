@@ -9,6 +9,7 @@ from django.db.models import Q
 from datetime import datetime
 from django.core.mail import EmailMessage
 import random
+from .helpers import check_payment_status
 
 
 
@@ -23,7 +24,27 @@ def playsnackladder(request):
     return render(request,"playsnackladder.html")
 
 def buycoins(request):
-    return render(request,"buycoins.html")
+    context = {}
+    if request.method == "POST":
+        order_id = request.POST.get("txnId")
+        amount = request.POST.get("amount")
+        response = check_payment_status(order_id , amount)
+        payment_status = str(response['body']['resultInfo']['resultCode'])
+      
+        if payment_status == '01':
+            pass
+        elif payment_status == '334':
+            message = 'Invalid transaction id'
+        elif payment_status == '335':
+            message = 'Your transaction was failed'
+        elif payment_status == '400':
+            message = 'Your transaction is pending try after some time'
+        else:
+            message = 'Your transaction was failed'
+        
+        context = {'message': message}
+    print(context)
+    return render(request,"buycoins.html" , context)
 
 def sellcoins(request):
     return render(request,"sellcoins.html",)
@@ -47,3 +68,6 @@ def contactpage(request):
 
 def history(request):
     return render(request,"history.html",context)
+
+
+

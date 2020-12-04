@@ -32,7 +32,7 @@ urlpatterns = [
     path("terms/",views.terms,name="terms"),
     path("playludo/",views.playludo,name="playludo"),
     path("playsnackladder/",views.playsnackladder,name="playsnackladder"),
-  
+   
    
 ]+static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)
 

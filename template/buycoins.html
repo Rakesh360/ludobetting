@@ -18,6 +18,15 @@
                 <div class="form-group">
                     
                     <form id="loadBalance" method="post" >
+                        {% csrf_token %}
+
+                        {% if message %}
+                        <div class="alert alert-danger">
+                            {{message}}
+                        </div>
+
+                        {% endif %}
+
                         <div class="input-group mb-3">
                             <input id="paymentNumber" type="number" class="form-control" name="paymentNumber" placeholder="Enter Receiver Paytm Number..." readonly value="7436890975">
                             <div class="input-group-append">
@@ -41,7 +50,7 @@
                    
                 </div>
                 
-                <
+                
             </div>
         </div>
 {% if status %}
