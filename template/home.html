@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+
+{% endblock %}
+{% block myblock %}
+
+    <h2 style="text-align:center;" >Choose Game</h2>
+
+    <div class="row">
+      <div class="col-lg-6 col-sm-6 portfolio-item">
+        <div class="card h-100">
+         
+          <a href="#"><img class="card-img-top" src="/static/images/ludo.jpg" alt=""></a>
+          <div class="card-body">
+           
+            <a class="btn btn-lg btn-secondary btn-block" href="{% url 'playludo'%}">Play Now</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-sm-6 portfolio-item">
+        <div class="card h-100">
+          <a href="#"><img class="card-img-top" src="/static/images/snakeladder.jpg" alt=""></a>
+          <div class="card-body">
+            <div class="card-body">
+           
+              <a class="btn btn-lg btn-secondary btn-block" href="{% url 'playsnackladder'%}">Play Now</a>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+   
+    </div>
+  
+</div>
+{% if status %}
+    <script>
+        alert("{{status}}");
+        window.location="/"
+    </script>
+{% endif %}
+{% endblock %}

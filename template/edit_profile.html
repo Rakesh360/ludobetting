@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+
+
+{% endblock %}
+{% block myblock %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 bg-img py-5 text-center text-light">
+            <h1> Edit Profile</h1>
+        </div>
+        <div class="col-md-6 mx-auto p-3 bg-light my-2">
+            <div class="text-center">
+              
+            </div>
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% if status %}
+                    <div class="alert alert-primary">{{status}}</div>
+                {% endif %}
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>First Name</label>
+                            <input type="text" class="form-control" name="fname" placeholder="Enter First Name" value="{{user.first_name}}">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Last Name</label>
+                            <input type="text" class="form-control" name="lname" placeholder="Enter Last Name" value="{{user.last_name}}">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Email</label>
+                            <input type="email" class="form-control" name="email" placeholder="Enter Name" value="{{user.email}}">
+                        </div>
+                        <div class="col-md-6">
+                            <label>user name</label>
+                            <input type="username" class="form-control" name="username" value="{{user.username}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Whatsapp Number</label>
+                            <input type="text" value="{{data.contact_number}}" class="form-control" name="contact" placeholder="Enter whatsapp Number" pattern="[0-9]{10}" title="Number must contain 10 digits only!!">
+                        </div>
+               
+                <div class="form-group">
+                    <input type="submit" name="changeprofile" value="Save Changes" class="btn btn-primary" style="width:100%;border-radius:10px;">
+                </div>
+
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

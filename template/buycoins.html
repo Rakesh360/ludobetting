@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+
+{% endblock %}
+{% block myblock %}
+
+  <div class="row justify-content-center">
+            <div class="col-10 col-md-4">
+                <div>
+                    <p class="custom-title">Buy Coins<br><span class="text-info" style="font-size:25px;">(1Rupee = 1Coins)</span></p>
+                    <p style="color: indigo;font-size: 19px;">Pay via Paytm Wallet Only</p>
+                    <p class="text-danger" style="font-size: 19px;">Don't pay through Bank (You will lose your money).</p>
+                    <p>Please pay at this number only <span><b style="font-size: 120%;color: red;">7786853588</b></span>, and enter wallet Transcation Id.<br>
+                    <a href='/help/loadbalance'>Help</a></p>
+                </div>
+                
+                <div class="form-group">
+                    
+                    <form id="loadBalance" method="post" >
+                        <div class="input-group mb-3">
+                            <input id="paymentNumber" type="number" class="form-control" name="paymentNumber" placeholder="Enter Receiver Paytm Number..." readonly value="7436890975">
+                            <div class="input-group-append">
+                                <button id="copyButton" class="btn btn-outline-secondary" type="button">Copy</button>
+                            </div>
+                        </div>
+                        <div id="yourPaytmNumber" style="display:none;" class="input-group mb-3">
+                            <input type="number" placeholder="Enter Your Paytm Number..." class="form-control">
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="number" id="txnId" name="txnId" placeholder="Transcation ID" required="" class="form-control">
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="number" id="amount" name="amount" placeholder="Amount" required="" class="form-control" step="0.01">
+                        </div>
+                        <input type="submit" value="Load" class="btn btn-success">
+                    </form>
+                    <div id="postResponse" class="mssg bg-danger">
+                        <span id="check" ></span>
+                    </div>
+                   
+                </div>
+                
+                <
+            </div>
+        </div>
+{% if status %}
+    <script>
+        alert("{{status}}");
+        window.location="/"
+    </script>
+{% endif %}
+{% endblock %}

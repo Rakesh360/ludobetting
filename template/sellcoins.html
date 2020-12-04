@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+
+{% endblock %}
+{% block myblock %}
+
+   <div class="row justify-content-center">
+            <div class="col-10 col-md-6">
+                <div>
+                    <p class="custom-title">Sell Chips<br><span class="text-info" style="font-size:25px;">(1Coins = 1Rupee)</span></p>
+                    <p class="text-primary">(Processing Timing: Within 12 hour)</p>
+                    <div style="padding: 5px; border: 2px dotted; border-radius: 10px;">
+                        <p class="text-info blink" style="font-size:22px;">Only <span class="text-dark"><b>2 request</b></span> allowed per day.</p>
+                        <p class="text-info blink" style="font-size:19px;">एक दिन में सिर्फ <span class="text-dark"><b>2 रिकवेस्ट</b></span> ही ली जाएगी |</p>
+                    </div>
+                   
+                </div><br>
+                <div class="form-group">
+                    <form id="withdrawForm" method="post">
+                        <select name="paymentMethod" class="form-control" id="paymentMethod">
+                            <option value="Paytm" selected>Paytm</option>
+                            
+                        </select><br>
+                        <input type="number" name="paymentNumber" placeholder="Paytm Number" required="" class="form-control"><br>
+                        <input type="number" name="paymentAmount" placeholder="Coin Amount" required="" class="form-control"><br>
+                        <div class="custom-control custom-checkbox mb-3">
+                            <input type="checkbox" class="custom-control-input" id="agreeCheckBox" required>
+                            <label class="custom-control-label" for="agreeCheckBox">I Agree that I am 18 years or older and not a resident of Tamil Nadu, Andhra Pradesh, Telangana, Assam, Orissa, Kerala, Sikkim, Nagaland or Gujarat.</label>
+                        </div>
+                        
+                        <input type="submit" value="Sell" class="btn btn-success">
+                    </form>
+                </div>
+                
+               
+            </div>
+        </div>
+{% if status %}
+    <script>
+        alert("{{status}}");
+        window.location="/"
+    </script>
+{% endif %}
+{% endblock %}

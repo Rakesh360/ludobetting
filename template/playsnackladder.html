@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+
+{% endblock %}
+{% block myblock %}
+
+<div class="container-fluid">
+    <div class="row py-5 " >
+        <div class="col-md-8 mx-auto my-5">
+        <form action="" >
+            <div class="container" >
+                <div class="row">
+                
+                   <div class="col-md-8">
+                        <input type="text" name="qry" class="form-control" placeholder="Amount">
+                    </div>
+                
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-success btn-md">Set</button>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+    
+     <ul  class="list-group">
+                
+                    <li  class="list-group-item" >
+                        <div style="float: left;width: 65%;">
+                     urer have set a Challenge for  <span style="background-color: antiquewhite; padding: 2px;"><b>₹150</b></span>
+                        </div>
+                        <div style="float:right;"> 
+                        <button class="btn btn-primary btn-sm">Play </button>
+                        </div>
+                    </li>
+                
+            </ul>
+            <ul  class="list-group">
+                
+                    <li  class="list-group-item" >
+                        <div style="float: left;width: 65%;">
+                     person1 vs person 2 for  <span style="background-color: antiquewhite; padding: 2px;"><b>₹150</b></span>
+                        </div>
+                        
+                    </li>
+                
+            </ul>
+  
+</div>
+{% if status %}
+    <script>
+        alert("{{status}}");
+        window.location="/"
+    </script>
+{% endif %}
+{% endblock %}
