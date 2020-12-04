@@ -22,6 +22,9 @@ class User_info(models.Model):
     term_condition = models.BooleanField(default=True)
     added_on = models.DateTimeField(auto_now_add=True,null=True)
     update_on = models.DateTimeField(auto_now=True,null=True)
+    
+    otp = models.IntegerField(blank=True, null=True)
+    is_verified = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
