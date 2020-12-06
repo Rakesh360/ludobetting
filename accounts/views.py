@@ -14,6 +14,7 @@ from cryptography.fernet import Fernet
 from .helpers import send_otp
 from django.http import JsonResponse
 
+
 from django.views.decorators.csrf import csrf_exempt
 
 def register(request):
@@ -33,7 +34,7 @@ def register(request):
         em = request.POST["email"]
         con = request.POST["contact"]
         term = request.POST["agreement"]
-        
+        reffral = request.POST["reffral"]
         
         user_by_username = User.objects.filter(username= un).first()
         user_by_mobile = User_info.objects.filter(whatsapp_number=con).first()
@@ -44,13 +45,16 @@ def register(request):
         if user_by_mobile:
             return render(request,"home.html",{"status":"This mobile number is already taken".format(con)})  
             
+        reffral_user = None
+        if reffral:
+            reffral_user = User.objects.filter(username = reffral).first()
         
-        usr = User(username = un , email = em , first_name=fname, last_name=lname )
+        usr = User(username = un , email = em , first_name=fname, last_name=lname  )
         usr.set_password(pwd)
         usr.save()
 
         otp = send_otp(con)
-        reg = User_info(user=usr, whatsapp_number=con , otp = otp)
+        reg = User_info(user=usr, whatsapp_number=con , otp = otp, referral_by = reffral_user)
         reg.save()
         encrypted_user_id = str(usr.id)
         return HttpResponseRedirect('/accounts/verify_otp/'+ (encrypted_user_id))

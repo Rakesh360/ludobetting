@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head %}
+
+{% endblock %}
+{% block myblock %}
+
+
+
+
+<div class="container">
+
+    <h4 class="text-center mt-5">Waiting for player to accept the game</h4>
+
+    {% if created_by == request.user.id %}
+    <div>
+        <input type="text" id="entered_room_code" class="form-control mt-5" placeholder="Enter room code">
+        <button type="button" class="btn btn-success mt-3" onclick="writeRoomCode()">Send Room Code</button>
+        <button type="button" class="btn btn-primary mt-3" onclick="changeRoomCode()">Change Room Code</button>
+    </div>
+    {% else %}
+    <div class="mt-5">
+        <input type="text" disabled="disabled" id="room_code" class="form-control" placeholder="Waiting for roomcode">
+        <button onclick="copyText()" class="btn btn-info">Copy text</button>
+    </div>
+
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+    {% endif %}
+
+    <h3 class="text-center">POST RESULT</h3>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <input type="hidden" name="game_slug" value="{{game_slug}}">
+        
+        
+        <input type="hidden" name="user_one" value="{{created_by}}">
+        
+        <input type="hidden" id="user_two" name="user_two" value="">
+
+    
+    
+    
+    <div class="mt-5 mx-auto text-center" style="width: 400px !important;">
+        <div class="input-group mt-3">
+            <button class="btn btn-outline-success" style="width: 300px !important;">
+                <div class="input-group-prepend ">
+                    <div class="input-group-text ">
+                        <input type="radio" name="game_result" aria-label="Radio button for following text input">
+
+                    </div>
+                    <p class="ml-5 mr-5 mt-2"> I Won ..</p>
+                </div>
+        </div>
+        <div class="input-group mt-3">
+            <button class="btn btn-outline-danger" style="width: 300px !important;">
+                <div class="input-group-prepend ">
+                    <div class="input-group-text ">
+                        <input type="radio"  name="game_result" aria-label="Radio button for following text input">
+
+                    </div>
+                    <p class="ml-5 mr-5 mt-2"> I loose</p>
+                </div>
+        </div>
+
+
+        <div class="input-group mt-3">
+            <button class="btn btn-outline-warning" style="width: 300px !important;">
+                <div class="input-group-prepend ">
+                    <div class="input-group-text ">
+                        <input type="radio"  name="game_result" aria-label="Radio button for following text input">
+
+                    </div>
+                    <p class="ml-5 mr-5 mt-2">Game Canceled</p>
+                </div>
+        </div>
+        </button>
+    </div>
+
+    <div id="image_preview"></div>
+    <div class="input-group is-invalid mt-4">
+        <div class="custom-file">
+          <input type="file" name="upload_file" id="upload_file" onchange="preview_image()" multiple class="custom-file-input" id="validatedInputGroupCustomFile" required>
+          <label class="custom-file-label" for="validatedInputGroupCustomFile">Choose file...</label>
+        </div>
+        
+      </div>
+
+      <button type="submit"  class="btn btn-success mt-2">Send</button>
+</form>
+
+</div>
+
+
+ <!-- The core Firebase JS SDK is always required and must be listed first -->
+ <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-app.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-database.js"></script>
+ <!-- TODO: Add SDKs for Firebase products that you want to use
+    https://firebase.google.com/docs/web/setup#available-libraries -->
+ <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-analytics.js"></script>
+
+<script>
+   
+   var firebaseConfig = {
+        apiKey: "AIzaSyA5QXTBDrkkt6RKDiEJlz2xVjq_YAL7Jww",
+        authDomain: "ludo-27977.firebaseapp.com",
+        databaseURL: "https://ludo-27977-default-rtdb.firebaseio.com",
+        projectId: "ludo-27977",
+        storageBucket: "ludo-27977.appspot.com",
+        messagingSenderId: "773216686826",
+        appId: "1:773216686826:web:2c86813e6a5a284914bd93",
+        measurementId: "G-D84371JPYJ"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    console.log(firebase)
+    const db = firebase.database();
+    var ref = db.ref(`/game/{{firebase_id}}`)
+    
+    var room_code = document.getElementById('room_code')
+    ref.on("child_changed", function (snapshot) {
+        var data = snapshot.val();
+        room_code.value = data
+        console.log(data);
+    });
+
+
+    function getData(){
+        var user_two = document.getElementById('user_two')
+        var room_code = document.getElementById('room_code')
+        ref.on('value' , function(snapshot){
+            console.log(snapshot.val());
+            room_code.value = snapshot.val().room_code;
+            user_two.value = snapshot.val().user_two
+        })
+    }
+
+    getData()
+
+    function copyText() {
+        var copyText = document.getElementById("room_code");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+    }
+
+    function changeRoomCode(){
+        var room_code = document.getElementById('entered_room_code')
+        room_code.disabled = false;
+    }
+
+    function writeRoomCode() {
+        var room_code = document.getElementById('entered_room_code')
+        console.log(room_code)
+        const db = firebase.database();
+        var ref = db.ref(`/game/{{firebase_id}}`)
+            ref.update({
+                room_code: room_code.value,      
+        });
+        room_code.disabled = true;
+    }
+</script>
+
+
+
+
+
+
+
+
+{% if status %}
+<script>
+    alert("{{status}}");
+    window.location = "/"
+</script>
+{% endif %}
+{% endblock %}

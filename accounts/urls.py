@@ -13,6 +13,10 @@ urlpatterns = [
     path("forgotpass",views.forgotpass, name="forgotpass"),
     path("reset_password",views.reset_password,name="reset_password"),
     path("verify_otp/<int:id>" , views.verify_otp , name="verify_otp"),
-    path("resend_otp/<id>" , views.resend_otp , name="resend_otp")
+    path("resend_otp/<id>" , views.resend_otp , name="resend_otp"),
+    
+    path("user_logout" , views.user_logout , name="user_logout")
+    
+    
     
 ]
