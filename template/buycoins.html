@@ -18,6 +18,17 @@
                 <div class="form-group">
                     
                     <form id="loadBalance" method="post" >
+                        {% csrf_token %}
+
+                        {% if message %}
+                        <div class="alert alert-danger">
+                            {{message}}
+                        </div>
+
+                        {% endif %}
+
+
+                       
                         <div class="input-group mb-3">
                             <input id="paymentNumber" type="number" class="form-control" name="paymentNumber" placeholder="Enter Receiver Paytm Number..." readonly value="7436890975">
                             <div class="input-group-append">
@@ -30,10 +41,12 @@
                         <div class="input-group mb-3">
                             <input type="number" id="txnId" name="txnId" placeholder="Transcation ID" required="" class="form-control">
                         </div>
-                        <div class="input-group mb-3">
+                        <div class="form-group mb-3">
                             <input type="number" id="amount" name="amount" placeholder="Amount" required="" class="form-control" step="0.01">
+                            <small id="emailHelp" class="form-text text-muted">Amount should be 50,100 or a multiple of 5.</small>
                         </div>
-                        <input type="submit" value="Load" class="btn btn-success">
+                        <button type="submit" id="btn_submit"  class="btn btn-success">Load</button>
+
                     </form>
                     <div id="postResponse" class="mssg bg-danger">
                         <span id="check" ></span>
@@ -41,9 +54,34 @@
                    
                 </div>
                 
-                <
+                
             </div>
         </div>
+
+<!-- 
+        <script>
+
+            function checkAmount(){
+                var amount = document.getElementById('amount').value;
+                var alert = document.getElementById('alert')
+                var message = document.getElementById('message')
+                var btn_submit = document.getElementById('btn_submit')
+                if(amount < 50){
+                    message.innerHTML = "Amount must be greater than 50"
+                    alert.style.display = 'block'
+                    btn_submit.disabled = true
+
+                }else if(amount % 5 != 0){
+                    message.innerHTML = "Amount must be a multiple of 5 eg. 50,100,150.."
+                    alert.style.display = 'block'
+                    btn_submit.disabled = true
+                }else{
+                    alert.style.display = 'none'
+                    btn_submit.disabled = false
+                }
+            }
+        
+        </script> -->
 {% if status %}
     <script>
         alert("{{status}}");
@@ -51,3 +89,5 @@
     </script>
 {% endif %}
 {% endblock %}
+
+

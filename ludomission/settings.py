@@ -39,8 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ludoapp'
+    'rest_framework',
+    'ludoapp',
+    'accounts'
 ]
+
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -133,3 +138,8 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = True
+
+
+
+FIREBASE_ORM_CERTIFICATE = BASE_DIR + 'static/firebase.json'
+FIREBASE_ORM_BUCKET_NAME = 'https://ludo-27977-default-rtdb.firebaseio.com/'

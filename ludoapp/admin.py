@@ -6,7 +6,10 @@ from ludoapp.models import (
     Add_coins, 
     Sell_coins, 
     Contact_Us, 
-    BetTransaction
+    BetTransaction,
+    GameStart,
+    Game,
+    GameImages
 )
 # Register your models here.
 
@@ -72,3 +75,7 @@ admin.site.register(User_info)
 
 admin.site.register(Add_coins, Add_coinsAdmin)
 admin.site.register(Sell_coins, Sell_coinsAdmin)
+
+admin.site.register(GameStart)
+admin.site.register(Game)
+admin.site.register(GameImages)
