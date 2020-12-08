@@ -187,7 +187,7 @@ def verify_otp_forget_password(request, id):
             return render(request,'otp.html', context)
     
     context = {'user_id' : id}
-    rerurn render(request , "verify_otp_forget_password.html" , context)
+    return render(request , "verify_otp_forget_password.html" , context)
 
 
 def change_password_final(request):
