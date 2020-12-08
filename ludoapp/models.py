@@ -32,6 +32,12 @@ class User_info(models.Model):
         return self.user.username
 
 
+class OrderCoins(models.Model):
+    user = models.ForeignKey(User  ,on_delete=models.CASCADE)
+    order_id = models.CharField(max_length=500 , blank=True)
+    reference_id = models.CharField(max_length=500 , blank=True)
+    status = models.BooleanField(default=False , blank=True)
+    
 
 class Contact_Us(models.Model):
     name = models.CharField(max_length=250)

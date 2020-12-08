@@ -18,13 +18,13 @@
                 <div class="my-5 p-5" style="box-shadow:0px 0px 10px black;">
                     <h2>Reset Your Password</h2> <hr>
                     <div id="result"></div>
-                    <form action="" method="post">
+                    <form  method="post">
                         {% csrf_token %}
                         <div class="form-group">
                             <label>Enter Your Username</label>
                             <input type="text" class="form-control" id="un" name="username" placeholder="Enter Username Here...">
                         </div>
-                        <button type="button" class="btn btn-warning" onclick="getpass()" id="continue">Click to Continue</button>
+                        <button type="submit" class="btn btn-warning" id="continue">Click to Continue</button>
                         <div class="mt-2" style="display:none" id="spin">
                             <div class="spinner"></div>
                         </div>
@@ -51,7 +51,7 @@
             </div>
         </div>
     </div>
-    <script>
+    <!-- <script>
         function getpass(){
             $("#spin").show();
             let username=$("#un").val();
@@ -95,6 +95,6 @@
     <script>
         alert("{{status}}");
         window.location="/"
-    </script>
+    </script> -->
     {% endif %}
 {% endblock %}

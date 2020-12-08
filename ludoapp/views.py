@@ -9,9 +9,10 @@ from django.db.models import Q
 from datetime import datetime
 from django.core.mail import EmailMessage
 import random
-from .helpers import check_payment_status
+from .helpers import check_payment_status , make_payment,  random_string_generator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
+from django.contrib.auth.decorators import login_required
 
 config = {
         "apiKey": "AIzaSyA5QXTBDrkkt6RKDiEJlz2xVjq_YAL7Jww",
@@ -39,25 +40,18 @@ def playsnackladder(request):
 def buycoins(request):
     context = {}
     if request.method == "POST":
-        order_id = request.POST.get("txnId")
-        amount = request.POST.get("amount")
-        response = check_payment_status(order_id , amount)
-        print(response)
-        # payment_status = str(response['body']['resultInfo']['resultCode'])
-      
-        # if payment_status == '01':
-        #     pass
-        # elif payment_status == '334':
-        #     message = 'Invalid transaction id'
-        # elif payment_status == '335':
-        #     message = 'Your transaction was failed'
-        # elif payment_status == '400':
-        #     message = 'Your transaction is pending try after some time'
-        # else:
-        #     message = 'Your transaction was failed'
-        message =""
-        context = {'message': message}
-    print(context)
+        orderAmount = request.POST.get("orderAmount")
+        checkout = {}
+        order_id = random_string_generator()
+        user_info = User_info.objects.filter(user= request.user ).first()
+        result = make_payment(order_id , orderAmount , request.user.username  , str(user_info.whatsapp_number) ,   "s")
+        
+        checkout = {'signature': result , 'orderAmount' : orderAmount , 'orderId' : order_id ,'customerName' :request.user.username , 'customerPhone' :str(user_info.whatsapp_number) }
+        
+        context = {'checkout': checkout}
+        order_coins = OrderCoins(order_id= order_id , user = request.user)
+        order_coins.save()
+        return render(request,"buycoins.html" , context)
     return render(request,"buycoins.html" , context)
 
 
@@ -109,6 +103,27 @@ def history(request):
     return render(request,"history.html",context)
 
 
+@login_required(login_url='/')
+@csrf_exempt
+def payment_success(request):
+    data  = (request.body)
+    
+    
+    decode_data = data.decode("utf-8") 
+    raw_data = decode_data.split("&")
+    order_id = raw_data[0].split("=")
+    order_amount = raw_data[1].split('=')
+    transaction_status = raw_data[3].split("=")
+    
+    order_coins = OrderCoins.objects.filter(order_id=order_id[1]).first()
+    if transaction_status[1] == 'SUCCESS':
+        user_info = User_info.objects.filter(user=request.user)
+        user_info.available_coins = order_amount[1]
+        user_info.save()
+        order_coins.status = True
+    order_coins.save()
+    
+    return render(request,"success.html")
 
 
 import json

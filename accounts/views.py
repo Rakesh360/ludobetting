@@ -154,24 +154,48 @@ def change_password(request):
 
     return render(request,"change_password.html",context)
 
-def forgotpass(request):
+def forget_password(request):
     context = {}
     if request.method=="POST":
         un = request.POST["username"]
-        pwd = request.POST["npass"]
-
-        user = get_object_or_404(User,username=un)
-        user.set_password(pwd)
-        user.save()
-
-        login(request,user)
-        if user.is_superuser:
-            return HttpResponseRedirect("/admin")
-        else:
-            return HttpResponseRedirect("/index")
+        user_by_username = User.objects.filter(username= un).first()
+       
+        if user_by_username is None:
+            return render(request,"forgot_pass.html",{"status":"User not found".format(un)})
         
-
+      
+        otp = send_otp(con)
+        reg = User_info.objects.filter(user = user_by_username).first()
+        reg.otp = otp
+        reg.save()
+        encrypted_user_id = str(usr.id)
+        return HttpResponseRedirect('/accounts/verify_otp_forget_password/'+ (encrypted_user_id))
     return render(request,"forgot_pass.html",context)
+
+
+
+def verify_otp_forget_password(request, id):
+    if request.method == "POST":
+        otp = request.POST.get('otp')
+        user = User_info.objects.filter(user = id).first()
+        if str(otp) == str(user.otp):
+            user.is_verified = True
+            user.save()
+            return redirect(user_login)
+        else:
+            context = {'message': 'Wrong OTP'}
+            return render(request,'otp.html', context)
+    
+    context = {'user_id' : id}
+    rerurn render(request , "verify_otp_forget_password.html" , context)
+
+
+def change_password_final(request):
+    if request.method == "POST":
+        new_pas = request.POST.get('new_password')
+    rerurn render(request , "change_password_final.html" , context)
+    
+
 
 
 def reset_password(request):

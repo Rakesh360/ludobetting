@@ -38,20 +38,41 @@
                         <div id="yourPaytmNumber" style="display:none;" class="input-group mb-3">
                             <input type="number" placeholder="Enter Your Paytm Number..." class="form-control">
                         </div>
-                        <div class="input-group mb-3">
-                            <input type="number" id="txnId" name="txnId" placeholder="Transcation ID" required="" class="form-control">
-                        </div>
+                    
                         <div class="form-group mb-3">
-                            <input type="number" id="amount" name="amount" placeholder="Amount" required="" class="form-control" step="0.01">
+                            <input type="number" id="amount" name="orderAmount" placeholder="Amount" required="" class="form-control" step="0.01">
                             <small id="emailHelp" class="form-text text-muted">Amount should be 50,100 or a multiple of 5.</small>
                         </div>
                         <button type="submit" id="btn_submit"  class="btn btn-success">Load</button>
 
                     </form>
+                    {% if checkout is not None %}
                     <div id="postResponse" class="mssg bg-danger">
                         <span id="check" ></span>
                     </div>
+                    {% endif %}
+
+
+             
                    
+                    {% if checkout %}
+
+                    <form id="redirectForm" method="post" action="https://test.cashfree.com/billpay/checkout/post/submit">
+                        <input type="hidden" name="appId" value="45107556fc3225a133718229d70154"/>
+                        <input type="hidden" name="orderId" value="{{checkout.orderId}}"/>
+                        <input type="hidden" name="orderAmount" value="{{checkout.orderAmount}}"/>
+                        <input type="hidden" name="orderCurrency" value="INR"/>
+                        <input type="hidden" name="customerName" value="{{checkout.customerName}}"/>
+                        <input type="hidden" name="customerEmail" value="abhijeetg40@gmail.com"/>
+                        <input type="hidden" name="customerPhone" value="{{checkout.customerPhone}}"/>
+                        <input type="hidden" name="returnUrl" value="http://127.0.0.1:8000/payment_success">
+                        <input type="hidden" name="signature" value="{{checkout.signature}}"/>
+                        <div class="text-center">
+                        <input type="submit" class="btn btn-info text-center" value="Pay {{checkout.orderAmount}}">
+                        </div>
+
+                        </form>
+                    {% endif %}
                 </div>
                 
                 
@@ -87,6 +108,9 @@
         alert("{{status}}");
         window.location="/"
     </script>
+
+
+
 {% endif %}
 {% endblock %}
 
