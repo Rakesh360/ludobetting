@@ -18,8 +18,8 @@ urlpatterns = [
     path("user_logout" , views.user_logout , name="user_logout"),
     
     
-    path("verify_otp_forget_password/<id>" , verify_otp_forget_password  , name="verify_otp_forget_password")
+    path("verify_otp_forget_password/<id>" , views.verify_otp_forget_password  , name="verify_otp_forget_password"),
     
     
-    
+    path("change_password_final/" , views.change_password_final , name="change_password_final")   
 ]

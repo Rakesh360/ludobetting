@@ -19,7 +19,7 @@ TRANSACTION_STATUS = (
 class User_info(models.Model):
     user = models.OneToOneField(User, related_name='agreement', on_delete=models.CASCADE)
     whatsapp_number = models.IntegerField()
-    available_coins = models.IntegerField(default=0)
+    available_coins = models.IntegerField(default=50)
    
     term_condition = models.BooleanField(default=True)
     added_on = models.DateTimeField(auto_now_add=True,null=True)
@@ -34,10 +34,15 @@ class User_info(models.Model):
 
 class OrderCoins(models.Model):
     user = models.ForeignKey(User  ,on_delete=models.CASCADE)
+    amount = models.IntegerField(default=0)
     order_id = models.CharField(max_length=500 , blank=True)
     reference_id = models.CharField(max_length=500 , blank=True)
     status = models.BooleanField(default=False , blank=True)
+    added_on = models.DateTimeField( default=datetime.datetime.utcnow)
     
+    def __str__(self):
+        return self.user.username + " ordered " + str(self.amount)
+
 
 class Contact_Us(models.Model):
     name = models.CharField(max_length=250)
@@ -112,6 +117,9 @@ class Game(models.Model):
     user_one = models.ForeignKey(User ,related_name="user_one" , on_delete=models.PROTECT)
     user_two = models.ForeignKey(User ,related_name="user_two", on_delete=models.PROTECT)
     game_winner = models.ForeignKey(User , related_name="game_winner" , blank=True , null=True, on_delete=models.PROTECT)    
+    
+    
+    
     betting_amount = models.IntegerField(default=0)
     room_code = models.CharField(max_length=1000)
     is_true = models.BooleanField(null=True , blank=True)
@@ -122,3 +130,21 @@ class Game(models.Model):
 class GameImages(models.Model):
     game = models.ForeignKey(Game, on_delete=models.PROTECT)
     images = models.ImageField(upload_to= 'static/gameimages')
+    
+    
+
+
+class Penalty(models.Model):
+    user = models.ForeignKey(User , on_delete=models.PROTECT)
+    amount =models.IntegerField(default=0)
+    reason_of_penalty = models.CharField(max_length=400)
+    added_on = models.DateTimeField( default=datetime.datetime.utcnow)
+    
+    def save(self, *args, **kwargs):
+        user = User_info.objects.get(user = self.user)
+        user.available_coins -= self.amount
+        user.save()
+        super(Penalty,self).save(*args, **kwargs)
+    
+    def __str__(self):
+        return self.user.username + ' ' + self.reason_of_penalty

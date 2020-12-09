@@ -49,7 +49,7 @@ def buycoins(request):
         checkout = {'signature': result , 'orderAmount' : orderAmount , 'orderId' : order_id ,'customerName' :request.user.username , 'customerPhone' :str(user_info.whatsapp_number) }
         
         context = {'checkout': checkout}
-        order_coins = OrderCoins(order_id= order_id , user = request.user)
+        order_coins = OrderCoins(order_id= order_id , user = request.user , amount=orderAmount)
         order_coins.save()
         return render(request,"buycoins.html" , context)
     return render(request,"buycoins.html" , context)
@@ -99,11 +99,19 @@ def contactpage(request):
         return render(request,"contact.html",{"status":res})
     return render(request,"help.html")
 
+
+
 def history(request):
+    user = request.user
+    order_coins = OrderCoins.objects.filter(user=user)
+    penaltys = Penalty.objects.filter(user=user)
+    payouts = BetTransaction.objects.filter(user=user)
+    
+    
+    context = {'order_coins': order_coins, 'penaltys': penaltys , 'payouts' : payouts}
     return render(request,"history.html",context)
 
 
-@login_required(login_url='/')
 @csrf_exempt
 def payment_success(request):
     data  = (request.body)
@@ -117,13 +125,14 @@ def payment_success(request):
     
     order_coins = OrderCoins.objects.filter(order_id=order_id[1]).first()
     if transaction_status[1] == 'SUCCESS':
-        user_info = User_info.objects.filter(user=request.user)
-        user_info.available_coins = order_amount[1]
+        user_info = User_info.objects.filter(user=order_coins.user).first()
+        user_info.available_coins += int(float((order_amount[1])))
         user_info.save()
         order_coins.status = True
-    order_coins.save()
-    
-    return render(request,"success.html")
+        order_coins.save()
+        return render(request,"success.html")
+    return render(request,"error.html")
+        
 
 
 import json
@@ -198,16 +207,16 @@ def waiting_room(request , game_slug):
     if request.method == 'POST':
         game_result = request.POST.get('game_result')
         images = request.FILES.getlist('upload_file')
-        game_start = GameStart.objects.filter(game_slug=request.POST.get('game_start')).first()
+        game_start = GameStart.objects.filter(game_slug=request.POST.get('game_slug')).first()
         user_one = User.objects.get(id = request.POST.get('user_one') )
         user_two = User.objects.get(id = request.POST.get('user_two') )
         firebase = pyrebase.initialize_app(config)
         db = firebase.database()
-        print(game_start)
         result = db.child("game").child(game_start.firebase_id).get()
         game_start.game_status = 'OVER'
         game_start.save()
-        game = Game(game_start = game_start , user_one = user_one,
+        game = Game(
+                    game_start = game_start , user_one = user_one,
                     user_two = user_two, betting_amount=game_start.game_amount,
                     room_code = result['room_code']
                     )

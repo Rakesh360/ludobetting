@@ -9,7 +9,9 @@ from ludoapp.models import (
     BetTransaction,
     GameStart,
     Game,
-    GameImages
+    GameImages,
+    Penalty,
+    OrderCoins
 )
 # Register your models here.
 
@@ -79,3 +81,5 @@ admin.site.register(Sell_coins, Sell_coinsAdmin)
 admin.site.register(GameStart)
 admin.site.register(Game)
 admin.site.register(GameImages)
+admin.site.register(OrderCoins)
+admin.site.register(Penalty)

@@ -157,18 +157,16 @@ def change_password(request):
 def forget_password(request):
     context = {}
     if request.method=="POST":
-        un = request.POST["username"]
-        user_by_username = User.objects.filter(username= un).first()
+        un = request.POST["mobile"]
+        user_by_username = User_info.objects.filter(whatsapp_number= un).first()
        
         if user_by_username is None:
             return render(request,"forgot_pass.html",{"status":"User not found".format(un)})
         
-      
-        otp = send_otp(con)
-        reg = User_info.objects.filter(user = user_by_username).first()
-        reg.otp = otp
-        reg.save()
-        encrypted_user_id = str(usr.id)
+        otp = send_otp(user_by_username.whatsapp_number)
+        user_by_username.otp = otp
+        user_by_username.save()
+        encrypted_user_id = str(user_by_username.id)
         return HttpResponseRedirect('/accounts/verify_otp_forget_password/'+ (encrypted_user_id))
     return render(request,"forgot_pass.html",context)
 
@@ -177,10 +175,15 @@ def forget_password(request):
 def verify_otp_forget_password(request, id):
     if request.method == "POST":
         otp = request.POST.get('otp')
-        user = User_info.objects.filter(user = id).first()
-        if str(otp) == str(user.otp):
-            user.is_verified = True
-            user.save()
+        print(id)
+        user = User.objects.filter(id=id).first()
+        print(user)
+        user_info = User_info.objects.filter(user = user).first()
+        print(user_info)
+        if str(otp) == str(user_info.otp):
+            authenticated_user = User.objects.get(id=id)
+            login(request , authenticated_user)
+            return redirect('/accounts/change_password_final/')
             return redirect(user_login)
         else:
             context = {'message': 'Wrong OTP'}
@@ -192,8 +195,21 @@ def verify_otp_forget_password(request, id):
 
 def change_password_final(request):
     if request.method == "POST":
-        new_pas = request.POST.get('new_password')
-    rerurn render(request , "change_password_final.html" , context)
+        new_pas = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        if new_pas != confirm_password:
+            context = {'message': 'Both password and confirm password  should be same'}
+            return render(request , "change_password_final.html" , context)
+            
+        
+        user = User.objects.get(id = request.user.id)
+        user.set_password(new_pas)
+        user.save()
+        context = {'message': 'Password changed'}
+        return render(request , "change_password_final.html" , context)
+        
+    return render(request , "change_password_final.html")
     
 
 
