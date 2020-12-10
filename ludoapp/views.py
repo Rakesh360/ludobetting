@@ -199,6 +199,8 @@ def mark_game_waiting(request , game_slug):
     firebase = pyrebase.initialize_app(config)
     db = firebase.database()
     result = db.child("game").child(game_start.firebase_id).update({'user_two' : user.id})
+    game = Game(game_start = game_start , betting_amount=game_start.game_amount)
+    game.save()
     return JsonResponse({'status': True , 'message': 'Game in waiting'})
 
 def waiting_room(request , game_slug):
@@ -215,14 +217,27 @@ def waiting_room(request , game_slug):
         result = db.child("game").child(game_start.firebase_id).get()
         game_start.game_status = 'OVER'
         game_start.save()
-        game = Game(
-                    game_start = game_start , user_one = user_one,
-                    user_two = user_two, betting_amount=game_start.game_amount,
-                    room_code = result['room_code']
-                    )
+        
+        
+        room_code = None
+        for key in result.each():
+            if key.key() == 'room_code':
+                room_code = (key.val())
+                
+        game = Game.objects.filter(game_start = game_start).first()
+        game.user_one = user_one
+        game.user_two = user_two
+        game.room_code = room_code
+        
+        if game.result_user_one is None and request.user == user_one:
+            game.result_user_one = game_result
+        
+        if game.result_user_two is None and request.user == user_two:
+            game.result_user_two = game_result
+
         game.save()
         for image in images:
-            game_image_obj = GameImage(game=game , images=image)
-            image.save()
-        
+            game_image_obj = GameImages(game=game , images=image)
+            game_image_obj.save()
+        return redirect('/success/')
     return render(request, 'waiting.html' , context)
