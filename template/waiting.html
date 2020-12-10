@@ -9,18 +9,20 @@
 
 
 <div class="container">
-
+    <form method="post" enctype="multipart/form-data">
     <h4 class="text-center mt-5">Waiting for player to accept the game</h4>
 
     {% if created_by == request.user.id %}
     <div>
-        <input type="text" id="entered_room_code" class="form-control mt-5" placeholder="Enter room code">
+        <input type="hidden"  readonly id="room_code" class="form-control" placeholder="Waiting for roomcode">
+       
+        <input type="text" required id="entered_room_code" class="form-control mt-5" placeholder="Enter room code">
         <button type="button" class="btn btn-success mt-3" onclick="writeRoomCode()">Send Room Code</button>
         <button type="button" class="btn btn-primary mt-3" onclick="changeRoomCode()">Change Room Code</button>
     </div>
     {% else %}
     <div class="mt-5">
-        <input type="text" disabled="disabled" id="room_code" class="form-control" placeholder="Waiting for roomcode">
+        <input type="text" required readonly id="room_code" class="form-control" placeholder="Waiting for roomcode">
         <button onclick="copyText()" class="btn btn-info">Copy text</button>
     </div>
 
@@ -31,7 +33,7 @@
 
     <h3 class="text-center">POST RESULT</h3>
 
-    <form method="post" enctype="multipart/form-data">
+  
         {% csrf_token %}
 
         <input type="hidden" name="game_slug" value="{{game_slug}}">
@@ -49,7 +51,7 @@
             <button class="btn btn-outline-success" style="width: 300px !important;">
                 <div class="input-group-prepend ">
                     <div class="input-group-text ">
-                        <input type="radio" name="game_result" aria-label="Radio button for following text input">
+                        <input type="radio"  value="WON"  name="game_result" aria-label="Radio button for following text input">
 
                     </div>
                     <p class="ml-5 mr-5 mt-2"> I Won ..</p>
@@ -59,7 +61,7 @@
             <button class="btn btn-outline-danger" style="width: 300px !important;">
                 <div class="input-group-prepend ">
                     <div class="input-group-text ">
-                        <input type="radio"  name="game_result" aria-label="Radio button for following text input">
+                        <input type="radio" value="LOST"  name="game_result" aria-label="Radio button for following text input">
 
                     </div>
                     <p class="ml-5 mr-5 mt-2"> I loose</p>
@@ -71,7 +73,7 @@
             <button class="btn btn-outline-warning" style="width: 300px !important;">
                 <div class="input-group-prepend ">
                     <div class="input-group-text ">
-                        <input type="radio"  name="game_result" aria-label="Radio button for following text input">
+                        <input type="radio" value="CANCEL"  name="game_result" aria-label="Radio button for following text input">
 
                     </div>
                     <p class="ml-5 mr-5 mt-2">Game Canceled</p>
@@ -135,6 +137,7 @@
         ref.on('value' , function(snapshot){
             console.log(snapshot.val());
             room_code.value = snapshot.val().room_code;
+            console.log(user_two)
             user_two.value = snapshot.val().user_two
         })
     }

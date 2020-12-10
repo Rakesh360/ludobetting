@@ -19,37 +19,48 @@
                     
                 </div>
             </li>
-            
+            <hr>
+            <div>
+                <p>Your coin order history</p>
+                {% for order_coin in order_coins %}
                 <li class="list-group-item history-list">
                     <div>
+                        <p>{{order_coin.order_id}}</p>
                         <small class="text-muted">Mon, 02 Nov 2020 22:09:51</small><br>
                         <div class="challengeText">
                             Sold by You
                         </div>
                         <div class="challengeHistory">
                             
-                                <span class="text-danger"><b>-₹4302.00</b></span>
+                                <span class="text-danger"><b>{{order_coin.amount}}</b></span>
                             
                         </div>
                     </div>
-                </li>
-            
-               
-            
+                </li>      
+                {% endfor %} 
+            </div>
+
+            <div>
+                <p>Your coin order history</p>
+                {% for penalty in penaltys %}
                 <li class="list-group-item history-list">
                     <div>
-                        <small class="text-muted">Mon, 02 Nov 2020 12:41:30</small><br>
+                        <p>{{order_coin.order_id}}</p>
+                        <small class="text-muted">Mon, 02 Nov 2020 22:09:51</small><br>
                         <div class="challengeText">
-                            Lost from Be Happy👍🏼
+                            Sold by You
                         </div>
                         <div class="challengeHistory">
                             
-                                <span class="text-danger"><b>-₹5000.00</b></span>
+                                <span class="text-danger"><b>{{order_coin.amount}}</b></span>
                             
                         </div>
                     </div>
-                </li>
-            
+                </li>      
+                {% endfor %} 
+            </div>
+           
+
         </ul>
 
 

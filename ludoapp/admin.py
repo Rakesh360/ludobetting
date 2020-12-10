@@ -9,7 +9,11 @@ from ludoapp.models import (
     BetTransaction,
     GameStart,
     Game,
-    GameImages
+    GameImages,
+    Penalty,
+    OrderCoins,
+    DisputedGame,
+    GameWinnerLoose
 )
 # Register your models here.
 
@@ -60,6 +64,7 @@ class Sell_coinsAdmin(admin.ModelAdmin):
     fields = ["id", "name", "", "message"]
 
 
+
 @admin.register(BetTransaction)
 class BetTransactionAdmin(admin.ModelAdmin):
     fields = ['user', 'coins', 'game_name', 'transaction_date', 'transaction_status']
@@ -76,6 +81,19 @@ admin.site.register(User_info)
 admin.site.register(Add_coins, Add_coinsAdmin)
 admin.site.register(Sell_coins, Sell_coinsAdmin)
 
-admin.site.register(GameStart)
+
 admin.site.register(Game)
-admin.site.register(GameImages)
+#admin.site.register(GameImages)
+class GameAdmin(admin.ModelAdmin):
+    inlines = [GameImages]
+
+    class Meta:
+       model = Game
+
+admin.site.register(GameStart)
+# admin.site.register(Game)
+
+admin.site.register(OrderCoins)
+admin.site.register(Penalty)
+admin.site.register(DisputedGame)
+admin.site.register(GameWinnerLoose)

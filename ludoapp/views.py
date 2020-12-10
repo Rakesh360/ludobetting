@@ -9,9 +9,10 @@ from django.db.models import Q
 from datetime import datetime
 from django.core.mail import EmailMessage
 import random
-from .helpers import check_payment_status
+from .helpers import check_payment_status , make_payment,  random_string_generator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
+from django.contrib.auth.decorators import login_required
 
 config = {
         "apiKey": "AIzaSyA5QXTBDrkkt6RKDiEJlz2xVjq_YAL7Jww",
@@ -39,25 +40,18 @@ def playsnackladder(request):
 def buycoins(request):
     context = {}
     if request.method == "POST":
-        order_id = request.POST.get("txnId")
-        amount = request.POST.get("amount")
-        response = check_payment_status(order_id , amount)
-        print(response)
-        # payment_status = str(response['body']['resultInfo']['resultCode'])
-      
-        # if payment_status == '01':
-        #     pass
-        # elif payment_status == '334':
-        #     message = 'Invalid transaction id'
-        # elif payment_status == '335':
-        #     message = 'Your transaction was failed'
-        # elif payment_status == '400':
-        #     message = 'Your transaction is pending try after some time'
-        # else:
-        #     message = 'Your transaction was failed'
-        message =""
-        context = {'message': message}
-    print(context)
+        orderAmount = request.POST.get("orderAmount")
+        checkout = {}
+        order_id = random_string_generator()
+        user_info = User_info.objects.filter(user= request.user ).first()
+        result = make_payment(order_id , orderAmount , request.user.username  , str(user_info.whatsapp_number) ,   "s")
+        
+        checkout = {'signature': result , 'orderAmount' : orderAmount , 'orderId' : order_id ,'customerName' :request.user.username , 'customerPhone' :str(user_info.whatsapp_number) }
+        
+        context = {'checkout': checkout}
+        order_coins = OrderCoins(order_id= order_id , user = request.user , amount=orderAmount)
+        order_coins.save()
+        return render(request,"buycoins.html" , context)
     return render(request,"buycoins.html" , context)
 
 
@@ -105,10 +99,40 @@ def contactpage(request):
         return render(request,"contact.html",{"status":res})
     return render(request,"help.html")
 
+
+
 def history(request):
+    user = request.user
+    order_coins = OrderCoins.objects.filter(user=user)
+    penaltys = Penalty.objects.filter(user=user)
+    payouts = BetTransaction.objects.filter(user=user)
+    
+    
+    context = {'order_coins': order_coins, 'penaltys': penaltys , 'payouts' : payouts}
     return render(request,"history.html",context)
 
 
+@csrf_exempt
+def payment_success(request):
+    data  = (request.body)
+    
+    
+    decode_data = data.decode("utf-8") 
+    raw_data = decode_data.split("&")
+    order_id = raw_data[0].split("=")
+    order_amount = raw_data[1].split('=')
+    transaction_status = raw_data[3].split("=")
+    
+    order_coins = OrderCoins.objects.filter(order_id=order_id[1]).first()
+    if transaction_status[1] == 'SUCCESS':
+        user_info = User_info.objects.filter(user=order_coins.user).first()
+        user_info.available_coins += int(float((order_amount[1])))
+        user_info.save()
+        order_coins.status = True
+        order_coins.save()
+        return render(request,"success.html")
+    return render(request,"error.html")
+        
 
 
 import json
@@ -175,6 +199,8 @@ def mark_game_waiting(request , game_slug):
     firebase = pyrebase.initialize_app(config)
     db = firebase.database()
     result = db.child("game").child(game_start.firebase_id).update({'user_two' : user.id})
+    game = Game(game_start = game_start , betting_amount=game_start.game_amount)
+    game.save()
     return JsonResponse({'status': True , 'message': 'Game in waiting'})
 
 def waiting_room(request , game_slug):
@@ -183,22 +209,35 @@ def waiting_room(request , game_slug):
     if request.method == 'POST':
         game_result = request.POST.get('game_result')
         images = request.FILES.getlist('upload_file')
-        game_start = GameStart.objects.filter(game_slug=request.POST.get('game_start')).first()
+        game_start = GameStart.objects.filter(game_slug=request.POST.get('game_slug')).first()
         user_one = User.objects.get(id = request.POST.get('user_one') )
         user_two = User.objects.get(id = request.POST.get('user_two') )
         firebase = pyrebase.initialize_app(config)
         db = firebase.database()
-        print(game_start)
         result = db.child("game").child(game_start.firebase_id).get()
         game_start.game_status = 'OVER'
         game_start.save()
-        game = Game(game_start = game_start , user_one = user_one,
-                    user_two = user_two, betting_amount=game_start.game_amount,
-                    room_code = result['room_code']
-                    )
+        
+        
+        room_code = None
+        for key in result.each():
+            if key.key() == 'room_code':
+                room_code = (key.val())
+                
+        game = Game.objects.filter(game_start = game_start).first()
+        game.user_one = user_one
+        game.user_two = user_two
+        game.room_code = room_code
+        
+        if game.result_user_one is None and request.user == user_one:
+            game.result_user_one = game_result
+        
+        if game.result_user_two is None and request.user == user_two:
+            game.result_user_two = game_result
+
         game.save()
         for image in images:
-            game_image_obj = GameImage(game=game , images=image)
-            image.save()
-        
+            game_image_obj = GameImages(game=game , images=image)
+            game_image_obj.save()
+        return redirect('/success/')
     return render(request, 'waiting.html' , context)
