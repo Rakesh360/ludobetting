@@ -8,11 +8,7 @@
   <div class="row justify-content-center">
             <div class="col-10 col-md-4">
                 <div>
-                    <p class="custom-title">Buy Coins<br><span class="text-info" style="font-size:25px;">(1Rupee = 1Coins)</span></p>
-                    <p style="color: indigo;font-size: 19px;">Pay via Paytm Wallet Only</p>
-                    <p class="text-danger" style="font-size: 19px;">Don't pay through Bank (You will lose your money).</p>
-                    <p>Please pay at this number only <span><b style="font-size: 120%;color: red;">7786853588</b></span>, and enter wallet Transcation Id.<br>
-                    <a href='/help/loadbalance'>Help</a></p>
+                    <p>Enter amount and click play to load coins</p>
                 </div>
                 
                 <div class="form-group">
@@ -65,7 +61,7 @@
                         <input type="hidden" name="customerName" value="{{checkout.customerName}}"/>
                         <input type="hidden" name="customerEmail" value="abhijeetg40@gmail.com"/>
                         <input type="hidden" name="customerPhone" value="{{checkout.customerPhone}}"/>
-                        <input type="hidden" name="returnUrl" value="http://127.0.0.1:8000/payment_success">
+                        <input type="hidden" name="returnUrl" value="http://68.183.94.46/payment_success">
                         <input type="hidden" name="signature" value="{{checkout.signature}}"/>
                         <div class="text-center">
                         <input type="submit" class="btn btn-info text-center" value="Pay {{checkout.orderAmount}}">
