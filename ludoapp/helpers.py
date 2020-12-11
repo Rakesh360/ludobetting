@@ -38,7 +38,7 @@ def make_payment(orderId , orderAmount, customerName ,customerPhone , returnUrl)
         "orderId" : orderId,
         "orderAmount" : orderAmount,
         "orderCurrency" : 'INR',
-        "customerName" : customerName,
+        "customerName" : 'Ludo betting',
         "customerPhone" : customerPhone,
         "customerEmail" : "abhijeetg40@gmail.com",
         "returnUrl" : 'http://68.183.94.46/payment_success'
