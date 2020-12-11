@@ -56,22 +56,22 @@
 <script>
     function checkuser(){
         let un = document.getElementById("username").value;
-        $.ajax({
-            url:"{% url 'check_user' %}",
-            type:"get",
-            data:{usern:un},
-            success:function(data){
-                if(data=="Exists"){
-                    $("#result").html("This username already taken").addClass("text-danger");
-                    $("#username").addClass("alert alert-danger");
-                    $("#submitbtn").attr("disabled","disabled");
-                }else{
-                    $("#result").html("");
-                    $("#username").removeClass("alert alert-danger")
-                    $("#submitbtn").removeAttr("disabled");
-                }
-            }
-        })
+        // $.ajax({
+        //     url:"{% url 'check_user' %}",
+        //     type:"get",
+        //     data:{usern:un},
+        //     success:function(data){
+        //         if(data=="Exists"){
+        //             $("#result").html("This username already taken").addClass("text-danger");
+        //             $("#username").addClass("alert alert-danger");
+        //             $("#submitbtn").attr("disabled","disabled");
+        //         }else{
+        //             $("#result").html("");
+        //             $("#username").removeClass("alert alert-danger")
+        //             $("#submitbtn").removeAttr("disabled");
+        //         }
+        //     }
+        // })
         
     }
 </script>
