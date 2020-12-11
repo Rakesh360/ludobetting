@@ -27,16 +27,25 @@ config = {
 def index(request):
     return render(request,"home.html")
 
+
+
+
+
 def playludo(request):
-    user = request.user
-    user_info = User_info.objects.filter(user=user ).first()
-    print(user_info.whatsapp_number)
-    context = {'coins' : user_info.available_coins , 'whatsapp_number' : user_info.whatsapp_number}
+    context = {}
+    if request.user.is_authenticated:
+        user = request.user
+        user_info = User_info.objects.filter(user=user ).first()
+        request.session['coins'] = user_info.available_coins
+        print(request.session['coins'])
+        context = {'coins' : user_info.available_coins , 'whatsapp_number' : user_info.whatsapp_number}
     return render(request,"playludo.html" , context)
 
 def playsnackladder(request):
     return render(request,"playsnackladder.html")
 
+
+@login_required(login_url='/accounts/user_login/')
 def buycoins(request):
     context = {}
     if request.method == "POST":
@@ -54,18 +63,23 @@ def buycoins(request):
         return render(request,"buycoins.html" , context)
     return render(request,"buycoins.html" , context)
 
+from datetime import datetime, timedelta
 
-
+@login_required(login_url='/accounts/user_login/')
 def sellcoins(request):
     user = request.user
     if request.method == 'POST':
         number = request.POST.get('number')
         amount = request.POST.get('amount')
-        user_info = User_info.objects.filter(user=user ).first()
-        
+        user_info = User_info.objects.filter(user=user , is_paid=False ).first()
+        total_request = BetTransaction.objects.filter(user=user,requested_date__gte = datetime.now() - timedelta(days=1))
         if int(amount) > int(user_info.available_coins):
             request.session['message'] = 'You dont have enough coins'
             request.session['class'] = 'danger'
+            return redirect('/sellcoins/')
+        elif len(total_request) >= 2 :
+            request.session['message'] = 'Only 2 request per day are allowed'
+            request.session['class'] = 'warning'
             return redirect('/sellcoins/')
         else:
             request.session['message'] = 'Your request has been received'
@@ -78,8 +92,8 @@ def sellcoins(request):
     user_info = User_info.objects.filter(user=user ).first()
     
     
-    print(user_info.whatsapp_number)
-    context = {'coins' : user_info.available_coins , 'whatsapp_number' : user_info.whatsapp_number}
+    sell_coins = BetTransaction.objects.filter(user=user)
+    context = {'coins' : user_info.available_coins , 'whatsapp_number' : user_info.whatsapp_number, 'sell_coins' :sell_coins}
     return render(request,"sellcoins.html", context)
 
 def terms(request):
@@ -100,15 +114,60 @@ def contactpage(request):
     return render(request,"help.html")
 
 
-
+@login_required(login_url='/accounts/user_login/')
 def history(request):
     user = request.user
     order_coins = OrderCoins.objects.filter(user=user)
     penaltys = Penalty.objects.filter(user=user)
     payouts = BetTransaction.objects.filter(user=user)
+    game_win_loose = GameWinnerLoose.objects.filter(user=user)
     
+    results = []
+    for order_coin in order_coins:
+        result = {}
+        result['amount'] = order_coin.amount
+        result['date'] = order_coin.added_on
+        result['transaction'] = order_coin.status
+        if order_coin.status is True:
+            result['remark'] = 'Your ordered coins succesfull'
+        else:
+            result['remark'] = 'Your transaction was failed'
+        results.append(result)
+        
+    for penalty in penaltys:
+        result = {}
+        result['amount'] = penalty.amount
+        result['date'] = penalty.added_on
+        result['transaction'] = True
+        result['remark'] = 'You got penalty'
+        result['reason'] = penalty.reason_of_penalty
+        results.append(result)
     
-    context = {'order_coins': order_coins, 'penaltys': penaltys , 'payouts' : payouts}
+    for payout in payouts:
+        result = {}
+        result['amount'] = payout.coins
+        result['transaction'] = payout.is_paid
+        result['date'] = payout.requested_date
+        result['remark'] = 'Sold by You'
+        results.append(result)
+        
+        
+    for game in game_win_loose:
+        result = {}
+        result['amount'] = game.amount
+        result['transaction'] = game.win_or_lost
+        result['date'] = game.date
+        if game.win_or_lost:
+            result['reason'] = 'Win from' + game.game.user_one +' vs '+ game.game.user_two
+        else:
+            result['reason'] = 'Loose from ' + game.game.user_one +' vs ' + game.game.user_two
+        result['remark'] = 'Coins for game winning or loosing'
+        results.append(result)
+        
+
+    final_results = sorted(results , key=lambda i:i ['date'])
+    (final_results).reverse()
+    context = {'results': final_results}
     return render(request,"history.html",context)
 
 
@@ -155,8 +214,9 @@ def create_game(request):
         return JsonResponse({'message' : 'You dont have enough coins.' , 'status' : False}) 
     
     game_slug = uuid.uuid4()
-    game_start = GameStart(game_created_by = user , game_slug=game_slug , game_status='PENDING' , game_amount=data.get('coins') )
-    
+    game_start = GameStart.objects.get_or_create(game_created_by = user  ,game_status='PENDING')
+    game_start.game_slug
+    game_start.game_amount=data.get('coins') 
     
     firebase = pyrebase.initialize_app(config)
     db = firebase.database()
@@ -178,19 +238,59 @@ from rest_framework.decorators import api_view
 @api_view()
 def all_games_api(request):
     user_id = request.query_params.get('user_id')
-    games_start = GameStart.objects.filter(game_status = 'PENDING').exclude(game_created_by=request.user)
+
+    if user_id is not None:
+        user = User.objects.get(id=user_id)
+        game_by_user = GameStart.objects.filter(game_status = 'PENDING' ,game_created_by = user).first()
+        games_start = GameStart.objects.filter(game_status = 'PENDING').exclude(game_created_by=request.user)
+    
+    else:
+        user = User.objects.first()
+        game_by_user =[]
+        games_start = GameStart.objects.filter(game_status = 'PENDING')
+    
+        
+    #game_by_user = GameStart.objects.filter(game_status = 'PENDING' ,game_created_by = user).first()
+    #games_start = GameStart.objects.filter(game_status = 'PENDING').exclude(game_created_by=request.user)
     games = []
+    
+    raw_running_games = Game.objects.all()[0:10]
+    running_games = []
+    for raw in raw_running_games:
+        game = {}
+        game['game_amount'] = raw.betting_amount
+        game['between'] = raw.user_one.username + ' vs ' + raw.user_two.username
+        running_games.append(game)    
+    
+    
+    
     for gs in games_start:
         game = {}
-        game['game_created_by'] = gs.game_created_by.username
+        game['game_created_by'] = gs.game_created_by.username + 'set a challenge for '
         game['game_slug'] = gs.game_slug
         game['game_status'] = gs.game_status
         game['game_amount'] = gs.game_amount
         game['firebase_id'] = gs.firebase_id
         games.append(game)
-    return JsonResponse(games , safe  =False)
+    
+    user_created_game = {}
+    if game_by_user:
+        user_created_game['game_created'] = game_by_user.game_created_by.username
+        user_created_game['game_amount'] = game_by_user.game_amount
+        user_created_game['game_slug'] = game_by_user.game_slug
+        user_created_game['game_id'] = game_by_user.id
         
         
+    
+    result = {}
+    result['game_by_user'] = user_created_game
+    result['all_games'] = games
+    result['running_games'] = running_games
+    
+    
+    return JsonResponse(result , safe  =False)
+        
+@login_required(login_url='/accounts/user_login/')
 def mark_game_waiting(request , game_slug):
     user = request.user
     game_start = GameStart.objects.filter(game_slug=game_slug).first()
@@ -202,7 +302,7 @@ def mark_game_waiting(request , game_slug):
     game = Game(game_start = game_start , betting_amount=game_start.game_amount)
     game.save()
     return JsonResponse({'status': True , 'message': 'Game in waiting'})
-
+@login_required(login_url='/accounts/user_login/')
 def waiting_room(request , game_slug):
     game_start = GameStart.objects.filter(game_slug= game_slug).first()
     context = {'firebase_id' : game_start.firebase_id , 'game_slug' :game_start.game_slug , 'game_amount' : game_start.game_amount , 'created_by' : game_start.game_created_by.id} 
@@ -241,3 +341,14 @@ def waiting_room(request , game_slug):
             game_image_obj.save()
         return redirect('/success/')
     return render(request, 'waiting.html' , context)
+
+
+@login_required(login_url='/accounts/user_login/')
+def delete_game(request , id):
+    try:
+        game = GameStart.objects.get(id=id)
+        game.delete()
+    except GameStart.DoesNotExist:
+        return redirect('/')
+    return redirect('/')
+    

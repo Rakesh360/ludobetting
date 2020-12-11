@@ -83,12 +83,8 @@ admin.site.register(Sell_coins, Sell_coinsAdmin)
 
 
 admin.site.register(Game)
-#admin.site.register(GameImages)
-class GameAdmin(admin.ModelAdmin):
-    inlines = [GameImages]
+admin.site.register(GameImages)
 
-    class Meta:
-       model = Game
 
 admin.site.register(GameStart)
 # admin.site.register(Game)
