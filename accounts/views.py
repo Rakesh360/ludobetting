@@ -27,8 +27,6 @@ def register(request):
         if usr.is_active:
             return HttpResponseRedirect("/index")
     if request.method=="POST":
-        fname = request.POST["first"]
-        lname = request.POST["last"]
         un = request.POST["uname"]
         pwd = request.POST["password"]
         em = request.POST["email"]
@@ -38,6 +36,7 @@ def register(request):
         
         user_by_username = User.objects.filter(username= un).first()
         user_by_mobile = User_info.objects.filter(whatsapp_number=con).first()
+
         
         if user_by_username:
             return render(request,"home.html",{"status":"This user name is already taken".format(un)})
@@ -49,7 +48,7 @@ def register(request):
         if reffral:
             reffral_user = User.objects.filter(username = reffral).first()
         
-        usr = User(username = un , email = em , first_name=fname, last_name=lname  )
+        usr = User(username = un , email = em )
         usr.set_password(pwd)
         usr.save()
 
