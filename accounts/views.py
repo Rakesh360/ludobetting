@@ -27,12 +27,12 @@ def register(request):
         if usr.is_active:
             return HttpResponseRedirect("/index")
     if request.method=="POST":
-        un = request.POST["uname"]
-        pwd = request.POST["password"]
-        em = request.POST["email"]
-        con = request.POST["contact"]
-        term = request.POST["agreement"]
-        reffral = request.POST["reffral"]
+        un = request.POST.get("uname")
+        pwd = request.POST.get("password")
+        em = request.POST.get("email")
+        con = request.POST.get("contact")
+        term = request.POST.get("agreement")
+        reffral = request.POST.get("reffral")
         
         user_by_username = User.objects.filter(username= un).first()
         user_by_mobile = User_info.objects.filter(whatsapp_number=con).first()
