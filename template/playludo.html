@@ -20,30 +20,37 @@
                             <input type="text" id="amount" onchange="checkAmount()" name="amount" class="form-control" placeholder="Amount">
                         </div>
                         <button></button>
+                        {% if user.is_authenticated %}
                         <div class="col-md-2">
                             <button  id="btn_submit" disabled onclick="startGame()" class="btn btn-success btn-md">Set</button>
                         </div>
+                        {% else %}
+                        <div class="col-md-2">
+                            <a href="{% url 'user_login' %}"  id="btn_submit"  class="btn btn-danger btn-md">Login to create game</a                   >
+                        </div>
+                        {% endif %}
                     </div>
+
+                    <ul  class="list-group  mt-4" >
+                
+                        <li  class="list-group-item" id="user_game" style="display: none">
+                           
+                        </li>
+                        
+                    </ul>
                 </div>
-            
+               
         </div>
     </div>
 <div class="container">
+   
     <ul  class="list-group" id="game_lists">
-                
-        <li  class="list-group-item" >
-            <div style="float: left;width: 65%;">
-            urer have set a Challenge for  <span style="background-color: antiquewhite; padding: 2px;"><b>₹150</b></span>
-            </div>
-            <div style="float:right;"> 
-            <button class="btn btn-primary btn-sm">Play </button>
-            </div>
-        </li>
+        
         
     </ul>
-    <ul  class="list-group">
-        
-        
+
+    <ul class="list-group" id="running_games">
+
     </ul>
     </div>
 
@@ -101,7 +108,7 @@
                 },3000)
             }else{
                var room_id = res.data.room_id
-               window.location.href  = `/waiting_room/${room_id}`
+             //  window.location.href  = `/waiting_room/${room_id}`
             
             }
         })
@@ -129,19 +136,52 @@
         }
     }
 
+    function setUserGame(obj){
+        console.log(obj)
+        if(Object.keys(obj).length){
+
+            var user_game = document.getElementById('user_game')
+            user_game.style.display = 'block'
+            var html = `<div style="float: left;width: 65%;">
+           You set a challenge for <span style="background-color: antiquewhite; padding: 2px;"><b>₹${obj.game_amount}</b></span>
+            </div>
+
+            <div style="float:right;"> 
+            <a class="btn btn-danger btn-sm" href="/delete_game/${obj.game_id}">DEL </a>
+            </div>
+
+
+            <div style="float:right;"> 
+            <a class="btn btn-success mr-3 btn-sm" href="/waiting_room/${obj.game_slug}">Start </a>
+            </div>
+`
+           
+            user_game.innerHTML = html
+
+        }
+
+    }
 
 
     function getGames(){
+        {% if request.user.is_authenticated %}
        var url = '/api/games?user_id={{request.user.id}}'
+       {% else %}
+       var url = '/api/games'
+       {% endif %}
        var game_lists = document.getElementById('game_lists')
+        var running_games = document.getElementById('running_games')
         axios.get(url).then(res =>{
-        var html = ''
-        res = res.data
-        
+
+            setUserGame(res.data.game_by_user)
+        //console.log(res.data)
+        var running_game = res.data.running_games
+        res = res.data.all_games
+       var html = ''
         for(var i = 0; i < res.length; i++){
         var list_html =`<li  class="list-group-item" >
             <div style="float: left;width: 65%;">
-            ${res[i].game_created_by} have set a Challenge for  <span style="background-color: antiquewhite; padding: 2px;"><b>₹${res[i].game_amount}</b></span>
+            ${res[i].game_created_by}  <span style="background-color: antiquewhite; padding: 2px;"><b>₹${res[i].game_amount}</b></span>
             </div>
             <div style="float:right;"> 
             <button  id="${res[i].game_slug}" onclick="checkPlay('${res[i].game_slug}')" data-amount='${res[i].game_amount}' class="btn btn-primary btn-sm">Play </button>
@@ -149,7 +189,28 @@
             </li>`
             html += list_html
         }
-    
+
+        var running_game_html =''
+        console.log(running_game)
+        for(var i=0;i<running_game.length;i++) {
+            
+            var list_html = `
+            <li  class="list-group-item" >
+            <div style="float: left;width: 65%;">
+            ${running_game[i].between}  <span style="background-color: antiquewhite; padding: 2px;"><b>₹${running_game[i].game_amount}</b></span>
+            </div>
+            <div style="float:right;"> 
+            <button  class="btn btn-info btn-sm">Game Running </button>
+            </div>
+            </li>`
+            running_game_html += list_html
+        }
+
+
+      
+
+
+        running_games.innerHTML = running_game_html
         game_lists.innerHTML = html
             
         })
@@ -183,7 +244,9 @@
    
     setInterval(()=>{
         getGames()
-    }, 2000)
+    }, 1000)
+
+    getGames()
 
 
 

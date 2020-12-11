@@ -7,7 +7,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12 bg-img py-5 text-center ">
-            <h1> Transection History</h1>
+            <h1> Transaction History</h1>
         </div>
         <div class="col-md-12  text-center " >
             <ul id="challenge-list" class="list-group" >
@@ -20,54 +20,35 @@
                 </div>
             </li>
             <hr>
+
+            
             <div>
                 <p>Your coin order history</p>
-                {% for order_coin in order_coins %}
-                <li class="list-group-item history-list">
+                {% for result in results %}
+                <li class="list-group-item ">
                     <div>
-                        <p>{{order_coin.order_id}}</p>
-                        <small class="text-muted">Mon, 02 Nov 2020 22:09:51</small><br>
+                        <p>{{result.remark}}</p>
+                        <small class="text-muted">{{result.date}}</small><br>
                         <div class="challengeText">
-                            Sold by You
+                       
                         </div>
+                        {% if result.transaction %}
                         <div class="challengeHistory">
-                            
-                                <span class="text-danger"><b>{{order_coin.amount}}</b></span>
-                            
+                                <span class="text-success"><b>+{{result.amount}}</b></span>
                         </div>
+                        {% else %}
+
+                        <div class="challengeHistory">
+                            <span class="text-danger"><b>- {{result.amount}}</b></span>
+                    </div>
+                        {% endif %}
                     </div>
                 </li>      
                 {% endfor %} 
             </div>
-
-            <div>
-                <p>Your coin order history</p>
-                {% for penalty in penaltys %}
-                <li class="list-group-item history-list">
-                    <div>
-                        <p>{{order_coin.order_id}}</p>
-                        <small class="text-muted">Mon, 02 Nov 2020 22:09:51</small><br>
-                        <div class="challengeText">
-                            Sold by You
-                        </div>
-                        <div class="challengeHistory">
-                            
-                                <span class="text-danger"><b>{{order_coin.amount}}</b></span>
-                            
-                        </div>
-                    </div>
-                </li>      
-                {% endfor %} 
-            </div>
-           
-
         </ul>
-
-
-
         </div>
-         
-    
-    
 </div>
+</div>
+
 {% endblock %}

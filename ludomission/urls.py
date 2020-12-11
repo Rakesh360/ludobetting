@@ -21,7 +21,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('' , include('ludoapp.urls')),
+    path('admin/', include('adminapp.urls')),
+    
     path('admin/', admin.site.urls),
+    
     path('accounts/' , include('accounts.urls')),
     
     path("",views.playludo,name="index"),
@@ -34,7 +37,8 @@ urlpatterns = [
     path("terms/",views.terms,name="terms"),
     path("playludo/",views.playludo,name="playludo"),
     path("playsnackladder/",views.playsnackladder,name="playsnackladder"),
-   
+    
+    path('delete_game/<id>', views.delete_game , name="delete_game"),
    
 ]+static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)
 

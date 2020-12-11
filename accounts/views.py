@@ -98,24 +98,30 @@ def check_user(request):
 
 def user_login(request):
     if request.method=="POST":
-        un = request.POST["username"]
+        whatsapp_number = request.POST["whatsapp"]
         pwd = request.POST["password"]
 
-        user = authenticate(username=un,password=pwd)
+        user_whatsapp = User_info.objects.filter(whatsapp_number = whatsapp_number).first()
+        
+        if user_whatsapp is None:
+            return render(request,"login.html",{"status":"User not found"})
+
+        user = authenticate(username=user_whatsapp.user.username,password=pwd)
         if user:
             login(request,user)
             if user.is_superuser:
                 return HttpResponseRedirect("/admin")
             else:
-                res = HttpResponseRedirect("/home")
+                res = HttpResponseRedirect("/")
                 if "rememberme" in request.POST:
                     res.set_cookie("user_id",user.id)
                     res.set_cookie("date_login",datetime.now())
                 return res
         else:
             return render(request,"home.html",{"status":"Invalid Username or Password"})
-
-    return HttpResponse("Called")
+    else:
+        return render(request,"login.html")    
+    
     
 @login_required
 def user_logout(request):

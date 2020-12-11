@@ -5,66 +5,94 @@
 {% endblock %}
 {% block myblock %}
 
-   <div class="row justify-content-center">
-            <div class="col-10 col-md-6">
-                <div>
-                    <p class="custom-title">Sell Chips<br><span class="text-info" style="font-size:25px;">(1Coins = 1Rupee)</span></p>
-                    <p class="text-primary">(Processing Timing: Within 12 hour)</p>
-                    <div style="padding: 5px; border: 2px dotted; border-radius: 10px;">
-                        <p class="text-info blink" style="font-size:22px;">Only <span class="text-dark"><b>2 request</b></span> allowed per day.</p>
-                        <p class="text-info blink" style="font-size:19px;">एक दिन में सिर्फ <span class="text-dark"><b>2 रिकवेस्ट</b></span> ही ली जाएगी |</p>
-                    </div>
-                   
-                </div><br>
-                <div class="form-group">
-                    <form id="withdrawForm" method="post">
-                        {% if request.session.message %}
-                        <div class="alert alert-{{request.session.class}}">
-                            {{ request.session.message }}
-                        </div>
-                        {% endif %}
-                          
-                        {% csrf_token %}
-                        {% if coins < 100 %}
-                        <div class="alert alert-danger">
-                         You must have 100 coins to withdraw. You have {{coins}} coins 💰.
-                           
-                        </div>
-                        {% endif %}
-                        <select name="paymentMethod" class="form-control" id="paymentMethod">
-                            <option value="Paytm" selected>Paytm</option>
-                        </select><br>
-                        <input type="number" name="number" value="{{whatsapp_number}}" placeholder="Paytm Number" required="" class="form-control"><br>
-                        <div class="form-group">
-                        <input type="number" name="amount" placeholder="Coin Amount" required="" class="form-control"><br>         
-                    </div>
-                        <div class="custom-control custom-checkbox mb-3">
-                            <input type="checkbox" class="custom-control-input" id="agreeCheckBox" required>
-                            <label class="custom-control-label" for="agreeCheckBox">I Agree that I am 18 years or older and not a resident of Tamil Nadu, Andhra Pradesh, Telangana, Assam, Orissa, Kerala, Sikkim, Nagaland or Gujarat.</label>
-                        </div>
-                    {% if coins > 100 %}    
-                        <input type="submit" value="Sell" class="btn btn-success">
-                        
-                        {% else %}
-                        <input type="submit" disabled value="Sell" class="btn btn-success">
-        
-               
-                        {% endif %}
-                    </form>
-                </div>
-                
-               
+<div class="row justify-content-center">
+    <div class="col-10 col-md-6">
+        <div>
+            <p class="custom-title">Sell Chips<br><span class="text-info" style="font-size:25px;">(1Coins =
+                    1Rupee)</span></p>
+            <p class="text-primary">(Processing Timing: Within 12 hour)</p>
+            <div style="padding: 5px; border: 2px dotted; border-radius: 10px;">
+                <p class="text-info blink" style="font-size:22px;">Only <span class="text-dark"><b>2 request</b></span>
+                    allowed per day.</p>
+                <p class="text-info blink" style="font-size:19px;">एक दिन में सिर्फ <span class="text-dark"><b>2
+                            रिकवेस्ट</b></span> ही ली जाएगी |</p>
             </div>
+
+        </div><br>
+        <div class="form-group">
+            <form id="withdrawForm" method="post">
+                {% if request.session.message %}
+                <div class="alert alert-{{request.session.class}}">
+                    {{ request.session.message }}
+                </div>
+                {% endif %}
+
+                {% csrf_token %}
+                {% if coins < 100 %}
+                <div class="alert alert-danger">
+                    You must have 100 coins to withdraw. You have {{coins}} coins 💰.
+
+                </div>
+                {% endif %}
+                <select name="paymentMethod" class="form-control" id="paymentMethod">
+                    <option value="Paytm" selected>Paytm</option>
+                </select><br>
+                <input type="number" name="number" value="{{whatsapp_number}}" placeholder="Paytm Number" required=""
+                    class="form-control"><br>
+                <div class="form-group">
+                    <input type="number" name="amount" placeholder="Coin Amount" required="" class="form-control"><br>
+                </div>
+                <div class="custom-control custom-checkbox mb-3">
+                    <input type="checkbox" class="custom-control-input" id="agreeCheckBox" required>
+                    <label class="custom-control-label" for="agreeCheckBox">I Agree that I am 18 years or older and not
+                        a resident of Tamil Nadu, Andhra Pradesh, Telangana, Assam, Orissa, Kerala, Sikkim, Nagaland or
+                        Gujarat.</label>
+                </div>
+                {% if coins > 100 %}
+                <input type="submit" value="Sell" class="btn btn-success">
+
+                {% else %}
+                <input type="submit" disabled value="Sell" class="btn btn-success">
+                {% endif %}
+            </form>
         </div>
+
+
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for sell_coin in sell_coins %}
+                <tr>
+                    <th scope="row">{{forloop.counter }}</th>
+                    <td>{{sell_coin.coins}}</td>
+                    <td>{{sell_coin.requested_date|date:'d-m-Y'}}</td>
+                    <td><button class="btn btn-success">PENDING</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+
+    </div>
+</div>
 
 
 
 
 
 {% if status %}
-    <script>
-        alert("{{status}}");
-        window.location="/"
-    </script>
+<script>
+    alert("{{status}}");
+    window.location = "/"
+</script>
 {% endif %}
 {% endblock %}
