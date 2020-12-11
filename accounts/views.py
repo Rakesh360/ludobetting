@@ -27,7 +27,7 @@ def register(request):
         if usr.is_active:
             return HttpResponseRedirect("/index")
     if request.method=="POST":
-        un = request.POST.get("uname")
+        un = request.POST.get("username")
         pwd = request.POST.get("password")
         em = request.POST.get("email")
         con = request.POST.get("contact")
