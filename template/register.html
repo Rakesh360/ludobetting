@@ -9,18 +9,20 @@
             <h1>Sign Up Here</h1>
             <form action="" method="post">
                 {% csrf_token %}
-
-                <input type="hidden" required class="form-control" name="first" value="ludo">
-                <input type="hidden" required class="form-control" name="last" value="mission">
-
-               
-
                 <div class="form-group">
                     <p id="result"></p>
                 </div>
+
+                <div class="form-group">
+                   
+                    <input type="hidden" required name="first" value="kjsh">
+                    <input type="hidden" required name="last" value="kjsh">
+
+                </div>
+
                 <div class="form-group">
                     <label for="">Username</label>
-                    <input type="text" required class="form-control" placeholder="Enter Username" name="username" id="username" onkeyup="checkuser()">
+                    <input type="text" required class="form-control" placeholder="Enter Username" name="uname" id="username" onkeyup="checkuser()">
                 </div>
                 <div class="form-group">
                     <label for="">Password</label>
@@ -56,22 +58,22 @@
 <script>
     function checkuser(){
         let un = document.getElementById("username").value;
-        // $.ajax({
-        //     url:"{% url 'check_user' %}",
-        //     type:"get",
-        //     data:{usern:un},
-        //     success:function(data){
-        //         if(data=="Exists"){
-        //             $("#result").html("This username already taken").addClass("text-danger");
-        //             $("#username").addClass("alert alert-danger");
-        //             $("#submitbtn").attr("disabled","disabled");
-        //         }else{
-        //             $("#result").html("");
-        //             $("#username").removeClass("alert alert-danger")
-        //             $("#submitbtn").removeAttr("disabled");
-        //         }
-        //     }
-        // })
+        $.ajax({
+            url:"{% url 'check_user' %}",
+            type:"get",
+            data:{usern:un},
+            success:function(data){
+                if(data=="Exists"){
+                    $("#result").html("This username already taken").addClass("text-danger");
+                    $("#username").addClass("alert alert-danger");
+                    $("#submitbtn").attr("disabled","disabled");
+                }else{
+                    $("#result").html("");
+                    $("#username").removeClass("alert alert-danger")
+                    $("#submitbtn").removeAttr("disabled");
+                }
+            }
+        })
         
     }
 </script>

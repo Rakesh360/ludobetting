@@ -29,8 +29,7 @@ def register(request):
     if request.method=="POST":
         fname = request.POST["first"]
         lname = request.POST["last"]
-        un = request.POST["username"]
-        print(un)
+        un = request.POST["uname"]
         pwd = request.POST["password"]
         em = request.POST["email"]
         con = request.POST["contact"]
