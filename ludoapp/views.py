@@ -167,7 +167,7 @@ def history(request):
         result['transaction'] = game.win_or_lost
         result['date'] = game.date
         if game.win_or_lost:
-            result['reason'] = 'Win from' + game.game.user_one +' vs '+ game.game.user_two
+            result['reason'] = 'Win from' + game.game.user_one.username +' vs '+ game.game.user_two.username
         else:
             result['reason'] = 'Loose from ' + game.game.user_one +' vs ' + game.game.user_two
         result['remark'] = 'Coins for game winning or loosing'
@@ -361,3 +361,6 @@ def delete_game(request , id):
         return redirect('/')
     return redirect('/')
     
+    
+def success(request):
+    return render(request, 'success.html')

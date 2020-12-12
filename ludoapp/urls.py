@@ -9,6 +9,7 @@ urlpatterns = [
     path('payment_success' , payment_success , name="payment_success"),
     path('api/games' , all_games_api , name="all_games_api"),
     path('api/mark_game_waiting/<game_slug>' , mark_game_waiting , name="mark_game_waiting"),
-    path('history' , history , name="history")
+    path('history' , history , name="history"),
+    path('success/' , success , name="success")
     
 ]
