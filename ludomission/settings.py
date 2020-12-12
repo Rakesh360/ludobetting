@@ -17,6 +17,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = os.path.join(BASE_DIR,"template")
 STATIC_DIR = os.path.join(BASE_DIR,"static")
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -143,6 +145,16 @@ EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = True
 
 
+
+sentry_sdk.init(
+    dsn="https://5cad3d52c09b4f719c8b90604aa596c3@o485344.ingest.sentry.io/5554716",
+    integrations=[DjangoIntegration()],
+    traces_sample_rate=1.0,
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
 
 # FIREBASE_ORM_CERTIFICATE = BASE_DIR + 'static/firebase.json'
 # FIREBASE_ORM_BUCKET_NAME = 'https://ludo-27977-default-rtdb.firebaseio.com/'
