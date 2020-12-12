@@ -33,6 +33,7 @@ def index(request):
 
 def playludo(request):
     context = {}
+    print(request.user)
     if request.user.is_authenticated:
         user = request.user
         user_info = User_info.objects.filter(user=user ).first()
@@ -214,8 +215,8 @@ def create_game(request):
         return JsonResponse({'message' : 'You dont have enough coins.' , 'status' : False}) 
     
     game_slug = uuid.uuid4()
-    game_start = GameStart.objects.get_or_create(game_created_by = user  ,game_status='PENDING')
-    game_start.game_slug
+    game_start,_ = GameStart.objects.get_or_create(game_created_by = user  ,game_status='PENDING')
+    game_start.game_slug = str(game_slug)
     game_start.game_amount=data.get('coins') 
     
     firebase = pyrebase.initialize_app(config)
