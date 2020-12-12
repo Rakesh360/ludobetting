@@ -147,7 +147,7 @@ EMAIL_USE_TLS = True
 
 
 sentry_sdk.init(
-    dsn="https://5cad3d52c09b4f719c8b90604aa596c3@o485344.ingest.sentry.io/5554716",
+    dsn="https://98ace30f000145d4a830172dd9b07ea9@o490582.ingest.sentry.io/5554720",
     integrations=[DjangoIntegration()],
     traces_sample_rate=1.0,
 
