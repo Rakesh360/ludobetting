@@ -34,10 +34,13 @@
 
                 </div>
                 {% endif %}
-                <select name="paymentMethod" class="form-control" id="paymentMethod">
+                <select name="payment_option" class="form-control" id="paymentMethod">
                     <option value="Paytm" selected>Paytm</option>
+                    <option value="GooglePay" >GooglePay</option>
+                    <option value="Phonepe" >Phonepe</option>
+
                 </select><br>
-                <input type="number" name="number" value="{{whatsapp_number}}" placeholder="Paytm Number" required=""
+                <input type="number" name="phone_number" value="{{whatsapp_number}}" placeholder="Paytm Number" required=""
                     class="form-control"><br>
                 <div class="form-group">
                     <input type="number" name="amount" placeholder="Coin Amount" required="" class="form-control"><br>
@@ -64,6 +67,10 @@
                     <th scope="col">#</th>
                     <th scope="col">Amount</th>
                     <th scope="col">Date</th>
+                    <th scope="col">PaymentOption</th>
+                    <th scope="col">Mobile</th>
+
+
                     <th scope="col">Status</th>
                 </tr>
             </thead>
@@ -74,6 +81,10 @@
                     <th scope="row">{{forloop.counter }}</th>
                     <td>{{sell_coin.coins}}</td>
                     <td>{{sell_coin.requested_date|date:'d-m-Y'}}</td>
+                    <td><span class="badge badge-primary">{{sell_coin.payment_option}}</span>
+                    <td>{{sell_coin.phone_number}}</td>
+                    </td>
+
                     <td><button class="btn btn-success">PENDING</button></td>
                 </tr>
                 {% endfor %}

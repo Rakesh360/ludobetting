@@ -31,7 +31,12 @@
  <div class="login-form">
     <form action="" method="post">
         {% csrf_token %}
-        <h2 class="text-center">Log in</h2>       
+        <h2 class="text-center">Log in</h2>   
+        {% if error %}   
+        <div class="alert alert-danger">
+            {{error}}
+        </div> 
+        {% endif %}
         <div class="form-group">
             <input type="text" name="whatsapp" class="form-control" placeholder="Whatsapp number" required="required">
         </div>
@@ -43,7 +48,7 @@
         </div>
         <div class="clearfix">
             <label class="pull-left checkbox-inline"><input type="checkbox"> Remember me</label>
-            <a href="{%url 'forget_password'%}" class="pull-right">Forgot Password?</a>forgotpass
+            <a href="{%url 'forget_password'%}" class="pull-right">Forgot Password?</a>
         </div>        
     </form>
     <p class="text-center"><a href="{% url 'reg'%}">Create an Account</a></p>

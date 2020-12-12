@@ -34,27 +34,25 @@ def register(request):
         em = request.POST["email"]
         con = request.POST["contact"]
         term = request.POST["agreement"]
-        reffral = request.POST["reffral"]
+        
         
         user_by_username = User.objects.filter(username= un).first()
         user_by_mobile = User_info.objects.filter(whatsapp_number=con).first()
-        
+        print(user_by_username)
         if user_by_username:
             return render(request,"home.html",{"status":"This user name is already taken".format(un)})
         
         if user_by_mobile:
             return render(request,"home.html",{"status":"This mobile number is already taken".format(con)})  
             
-        reffral_user = None
-        if reffral:
-            reffral_user = User.objects.filter(username = reffral).first()
+        
         
         usr = User(username = un , email = em , first_name=fname, last_name=lname  )
         usr.set_password(pwd)
         usr.save()
 
         otp = send_otp(con)
-        reg = User_info(user=usr, whatsapp_number=con , otp = otp, referral_by = reffral_user)
+        reg = User_info(user=usr, whatsapp_number=con , otp = otp)
         reg.save()
         encrypted_user_id = str(usr.id)
         return HttpResponseRedirect('/accounts/verify_otp/'+ (encrypted_user_id))
@@ -104,7 +102,7 @@ def user_login(request):
         user_whatsapp = User_info.objects.filter(whatsapp_number = whatsapp_number).first()
         
         if user_whatsapp is None:
-            return render(request,"login.html",{"status":"User not found"})
+            return render(request,"login.html",{"error":"User not found"})
 
         user = authenticate(username=user_whatsapp.user.username,password=pwd)
         if user:
@@ -118,12 +116,11 @@ def user_login(request):
                     res.set_cookie("date_login",datetime.now())
                 return res
         else:
-            return render(request,"home.html",{"status":"Invalid Username or Password"})
+            return render(request,"login.html",{"error":"Invalid Username or Password"})
     else:
         return render(request,"login.html")    
     
     
-@login_required
 def user_logout(request):
     logout(request)
     res =  HttpResponseRedirect("/")
@@ -172,7 +169,7 @@ def forget_password(request):
         otp = send_otp(user_by_username.whatsapp_number)
         user_by_username.otp = otp
         user_by_username.save()
-        encrypted_user_id = str(user_by_username.id)
+        encrypted_user_id = str(user_by_username.user.id)
         return HttpResponseRedirect('/accounts/verify_otp_forget_password/'+ (encrypted_user_id))
     return render(request,"forgot_pass.html",context)
 
@@ -181,7 +178,7 @@ def forget_password(request):
 def verify_otp_forget_password(request, id):
     if request.method == "POST":
         otp = request.POST.get('otp')
-        print(id)
+        
         user = User.objects.filter(id=id).first()
         print(user)
         user_info = User_info.objects.filter(user = user).first()

@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 import datetime
 from django.db.models.signals import pre_save , post_save
 from django.dispatch import receiver
-
+from django.utils import timezone
 GAMES_AVAILABLE = (
     ('ludo', 'Ludo'),
     ('snake_n_ladders', "Snake 'n Ladders"),
@@ -88,11 +88,12 @@ class BetTransaction(models.Model):
     user = models.ForeignKey(User, related_name='better', on_delete=models.CASCADE)
     coins = models.IntegerField()
     is_paid = models.BooleanField(default=False)
-    requested_date = models.DateTimeField(auto_now_add=True , null=True , blank=True)
+    requested_date = models.DateTimeField(default=timezone.now() , null=True , blank=True)
     transaction_status = models.BooleanField(default=False, verbose_name="Transaction Status", blank=True, null=True, choices=TRANSACTION_STATUS)
     transaction_date = models.DateTimeField(default=timezone.now, verbose_name="Transaction On")
     game_name = models.CharField(max_length=100 , blank=True, null=True)
-    
+    payment_option = models.CharField(max_length=100 , default="Paytm")
+    phone_number = models.CharField(max_length=100 , default="User provided")
     def __str__(self):
         paid = ' paid' if self.transaction_status else ' not paid'
         return self.user.username + " requested " + str(self.coins) + paid

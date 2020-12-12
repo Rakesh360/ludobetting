@@ -9,6 +9,14 @@
             <h1>Sign Up Here</h1>
             <form action="" method="post">
                 {% csrf_token %}
+
+                {% if status %}
+                <div class="alert alert-danger">
+                    {{status}}
+                </div>
+
+                {% endif %}
+
                 <div class="form-group">
                     <p id="result"></p>
                 </div>
@@ -37,10 +45,7 @@
                     <input type="number" required class="form-control" placeholder="Enter Mobile Number" name="contact">
                 </div>
 
-                <div class="form-group">
-                    <label for="">Refrral Code</label>
-                    <input type="text" class="form-control" placeholder="Enter the reffral code" name="reffral">
-                </div>
+                
                 <div class="form-group">
                     
                      <input type="checkbox" name="agreement" required>
@@ -55,32 +60,6 @@
         </div>
     </div>
 </div>
-<script>
-    function checkuser(){
-        let un = document.getElementById("username").value;
-        $.ajax({
-            url:"{% url 'check_user' %}",
-            type:"get",
-            data:{usern:un},
-            success:function(data){
-                if(data=="Exists"){
-                    $("#result").html("This username already taken").addClass("text-danger");
-                    $("#username").addClass("alert alert-danger");
-                    $("#submitbtn").attr("disabled","disabled");
-                }else{
-                    $("#result").html("");
-                    $("#username").removeClass("alert alert-danger")
-                    $("#submitbtn").removeAttr("disabled");
-                }
-            }
-        })
-        
-    }
-</script>
-{% if status %}
-    <script>
-        alert("{{status}}");
-        window.location="/"
-    </script>
-{% endif %}
+
+
 {% endblock %}

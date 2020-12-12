@@ -13,9 +13,9 @@
             <ul id="challenge-list" class="list-group" >
             <li class="list-group-item history-list">
                 <div>
-                    <div>
+                    <!-- <div>
                         <b>Referral Earning: </b>0 | <b>Penality: </b>50 | <b>Referred: </b>0
-                    </div>
+                    </div> -->
                     
                 </div>
             </li>
@@ -27,8 +27,8 @@
                 {% for result in results %}
                 <li class="list-group-item ">
                     <div>
-                        <p>{{result.remark}}</p>
-                        <small class="text-muted">{{result.date}}</small><br>
+                        <p>{{result.remark}} - {{result.date}}</p>
+                       
                         <div class="challengeText">
                        
                         </div>
@@ -45,6 +45,20 @@
                     </div>
                 </li>      
                 {% endfor %} 
+                <li class="list-group-item ">
+                    <div>
+                        <p>Joining Bonous</p>
+                        <small class="text-muted">Credited to your account</small><br>
+                        <div class="challengeText">
+                       
+                        </div>
+                       
+                        <div class="challengeHistory">
+                                <span class="text-success"><b>+ 50</b></span>
+                        </div>
+                       
+                    </div>
+                </li>    
             </div>
         </ul>
         </div>

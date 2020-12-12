@@ -72,8 +72,16 @@ def sellcoins(request):
     if request.method == 'POST':
         number = request.POST.get('number')
         amount = request.POST.get('amount')
-        user_info = User_info.objects.filter(user=user , is_paid=False ).first()
-        total_request = BetTransaction.objects.filter(user=user,requested_date__gte = datetime.now() - timedelta(days=1))
+        payment_option = request.POST.get('payment_option')
+        phone_number = request.POST.get('phone_number')
+        print('#########################')
+        print(payment_option)
+        print(phone_number)
+        print('#########################')
+        print('#########################')
+        
+        user_info = User_info.objects.filter(user=user ).first()
+        total_request = BetTransaction.objects.filter(user=user,requested_date__gte = datetime.now() - timedelta(days=1) , is_paid=False)
         if int(amount) > int(user_info.available_coins):
             request.session['message'] = 'You dont have enough coins'
             request.session['class'] = 'danger'
@@ -85,7 +93,7 @@ def sellcoins(request):
         else:
             request.session['message'] = 'Your request has been received'
             request.session['class'] = 'success'
-            user_bet = BetTransaction(user = user , coins= amount)
+            user_bet = BetTransaction(user = user , coins= amount , phone_number=phone_number, payment_option=payment_option)
             user_bet.save()
             return redirect('/sellcoins/')
             
