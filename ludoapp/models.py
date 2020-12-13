@@ -170,6 +170,10 @@ def win_loose_handler(sender, instance, *args, **kwargs):
 
 @receiver(post_save, sender=Game)
 def game_handler(sender, instance, *args, **kwargs):
+    if instance.result_user_one or instance.result_user_two:
+        game_start = GameStart.objects.get(id = instance.game_start.id)
+        game_start.game_status = "OVER"
+        game_start.save()
     if instance.result_user_one and instance.result_user_two:
         win_id = None
         lost_id = None
