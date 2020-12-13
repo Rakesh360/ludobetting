@@ -76,6 +76,21 @@
 
 <script>
     
+    var firebaseConfig = {
+        apiKey: "AIzaSyA5QXTBDrkkt6RKDiEJlz2xVjq_YAL7Jww",
+        authDomain: "ludo-27977.firebaseapp.com",
+        databaseURL: "https://ludo-27977-default-rtdb.firebaseio.com",
+        projectId: "ludo-27977",
+        storageBucket: "ludo-27977.appspot.com",
+        messagingSenderId: "773216686826",
+        appId: "1:773216686826:web:2c86813e6a5a284914bd93",
+        measurementId: "G-D84371JPYJ"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  //  console.log(firebase)
+    const db = firebase.database();
 
     function checkAgain() {
         if (confirm("Are you sure?")) {
@@ -137,26 +152,31 @@
     }
 
     function setUserGame(obj){
-        console.log(obj)
+       console.log(obj)
         if(Object.keys(obj).length){
-
             var user_game = document.getElementById('user_game')
             user_game.style.display = 'block'
             var html = `<div style="float: left;width: 65%;">
-           You set a challenge for <span style="background-color: antiquewhite; padding: 2px;"><b>₹${obj.game_amount}</b></span>
+            You set a challenge for <span style="background-color: antiquewhite; padding: 2px;"><b>₹${obj.game_amount}</b></span>
             </div>
-
             <div style="float:right;"> 
             <a class="btn btn-danger btn-sm" href="/delete_game/${obj.game_id}">DEL </a>
             </div>
-
-
-            <div style="float:right;"> 
-            <a class="btn btn-success mr-3 btn-sm" href="/waiting_room/${obj.game_slug}">Start </a>
-            </div>
-`
-           
+           `
             user_game.innerHTML = html
+
+            var ref = db.ref(`/game/${obj.firebase_id}`)
+            ref.on('value' , function(snapshot){
+                console.log(snapshot)
+                if(snapshot.val().user_two != ''){
+                    // alert(snapshot.val().game_slug);
+                    setTimeout(()=>{
+                        window.location.href = `/waiting_room/${obj.game_slug}`
+                    }, 2000)
+                  
+                    console.log("redirect right now")
+                }
+        })
 
         }
 
@@ -173,7 +193,7 @@
         var running_games = document.getElementById('running_games')
         axios.get(url).then(res =>{
 
-            setUserGame(res.data.game_by_user)
+        setUserGame(res.data.game_by_user)
         //console.log(res.data)
         var running_game = res.data.running_games
         res = res.data.all_games
@@ -199,7 +219,7 @@
 
     function setRunningGame(running_game){
         var running_game_html =''
-        console.log(running_game)
+       
         for(var i=0;i<running_game.length;i++) {
             var list_html = `
             <li  class="list-group-item" >
@@ -221,7 +241,7 @@
         var current_coint = '{{coins}}' 
         var button = document.getElementById(id)
 
-        if(current_coint < button.dataset.amount){
+        if(parseInt(current_coint) < parseInt(button.dataset.amount)){
             button.className = 'btn btn-danger btn-sm'
             button.textContent = 'Not enough amount'
         }else{
@@ -236,14 +256,14 @@
 
         }
         
-        console.log(button.dataset.amount)
+       // console.log(button.dataset.amount)
 
     }
 
    
     setInterval(()=>{
         getGames()
-    }, 3000)
+    }, 2000)
 
     getGames()
 

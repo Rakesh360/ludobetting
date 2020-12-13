@@ -10,103 +10,83 @@
 
 <div class="container">
     <form method="post" enctype="multipart/form-data">
-    <h4 class="text-center mt-5">Waiting for player to accept the game</h4>
+        <h4 class="text-center mt-5">Waiting for player to accept the game</h4>
 
-    {% if created_by == request.user.id %}
-    <div>
-        <input type="hidden"  readonly id="room_code" class="form-control" placeholder="Waiting for roomcode">
-       
-        <input type="text" required id="entered_room_code" class="form-control mt-5" placeholder="Enter room code">
-        <button type="button" class="btn btn-success mt-3" onclick="writeRoomCode()">Send Room Code</button>
-        <button type="button" class="btn btn-primary mt-3" onclick="changeRoomCode()">Change Room Code</button>
-    </div>
-    {% else %}
-    <div class="mt-5">
-        <input type="text" required readonly id="room_code" class="form-control" placeholder="Waiting for roomcode">
-        <button onclick="copyText()" class="btn btn-info">Copy text</button>
-    </div>
+        {% if created_by == request.user.id %}
+        <div>
+            <input type="hidden" readonly id="room_code" class="form-control" placeholder="Waiting for roomcode">
 
-    <div class="spinner-border text-primary" role="status">
-        <span class="sr-only">Loading...</span>
-    </div>
-    {% endif %}
+            <input type="text" required id="entered_room_code" class="form-control mt-5" placeholder="Enter room code">
+            <button type="button" class="btn btn-success mt-3" onclick="writeRoomCode()">Send Room Code</button>
+            <button type="button" class="btn btn-primary mt-3" onclick="changeRoomCode()">Change Room Code</button>
+        </div>
+        {% else %}
+        <div class="mt-5">
+            <input type="text" required readonly id="room_code" class="form-control" placeholder="Waiting for roomcode">
+            <button onclick="copyText()" class="btn btn-info">Copy text</button>
+        </div>
 
-    <h3 class="text-center">POST RESULT</h3>
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        {% endif %}
 
-  
+        <h3 class="text-center">POST RESULT</h3>
+
+
         {% csrf_token %}
 
         <input type="hidden" name="game_slug" value="{{game_slug}}">
-        
-        
+
+
         <input type="hidden" name="user_one" value="{{created_by}}">
-        
+
         <input type="hidden" id="user_two" name="user_two" value="">
 
-    
-    
-    
-    <div class="mt-5 mx-auto text-center" style="width: 400px !important;">
-        <div class="input-group mt-3">
-            <button class="btn btn-outline-success" style="width: 300px !important;">
-                <div class="input-group-prepend ">
-                    <div class="input-group-text ">
-                        <input type="radio"  value="WON"  name="game_result" aria-label="Radio button for following text input">
 
-                    </div>
-                    <p class="ml-5 mr-5 mt-2"> I Won ..</p>
+        <div class="mt-5 mx-auto text-center"  style="width: 400px !important;">
+            <select class="form-control" name="game_result" id="result_check" onchange="checkValue()" id="exampleFormControlSelect1">
+                <option select>Choose</option>
+
+                <option value="WON">Won Game</option>
+                <option value="LOST">Lost Game</option>
+                <option value="CANCEL">Game got cancelled</option>
+
+            </select>
+
+        </div>
+
+
+
+       
+
+        <div class="container">
+            <div id="image_preview"></div>
+            <div class="input-group is-invalid mt-4" id="upload_images" style="display: none">
+                <div class="custom-file">
+                    <input type="file" name="upload_file" id="upload_file" onchange="preview_image()" multiple
+                        class="custom-file-input" id="validatedInputGroupCustomFile" >
+                    <label class="custom-file-label" for="validatedInputGroupCustomFile">Choose file...</label>
                 </div>
+            </div>
         </div>
-        <div class="input-group mt-3">
-            <button class="btn btn-outline-danger" style="width: 300px !important;">
-                <div class="input-group-prepend ">
-                    <div class="input-group-text ">
-                        <input type="radio" value="LOST"  name="game_result" aria-label="Radio button for following text input">
+        <button type="submit" class="btn btn-success mt-2">Send</button>
+    </form>
 
-                    </div>
-                    <p class="ml-5 mr-5 mt-2"> I loose</p>
-                </div>
-        </div>
-
-
-        <div class="input-group mt-3">
-            <button class="btn btn-outline-warning" style="width: 300px !important;">
-                <div class="input-group-prepend ">
-                    <div class="input-group-text ">
-                        <input type="radio" value="CANCEL"  name="game_result" aria-label="Radio button for following text input">
-
-                    </div>
-                    <p class="ml-5 mr-5 mt-2">Game Canceled</p>
-                </div>
-        </div>
-        </button>
-    </div>
-
-    <div id="image_preview"></div>
-    <div class="input-group is-invalid mt-4">
-        <div class="custom-file">
-          <input type="file" name="upload_file" id="upload_file" onchange="preview_image()" multiple class="custom-file-input" id="validatedInputGroupCustomFile" required>
-          <label class="custom-file-label" for="validatedInputGroupCustomFile">Choose file...</label>
-        </div>
-        
-      </div>
-
-      <button type="submit"  class="btn btn-success mt-2">Send</button>
-</form>
+    </form>
 
 </div>
 
 
- <!-- The core Firebase JS SDK is always required and must be listed first -->
- <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-app.js"></script>
- <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-database.js"></script>
- <!-- TODO: Add SDKs for Firebase products that you want to use
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-database.js"></script>
+<!-- TODO: Add SDKs for Firebase products that you want to use
     https://firebase.google.com/docs/web/setup#available-libraries -->
- <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-analytics.js"></script>
 
 <script>
-   
-   var firebaseConfig = {
+    var firebaseConfig = {
         apiKey: "AIzaSyA5QXTBDrkkt6RKDiEJlz2xVjq_YAL7Jww",
         authDomain: "ludo-27977.firebaseapp.com",
         databaseURL: "https://ludo-27977-default-rtdb.firebaseio.com",
@@ -119,10 +99,9 @@
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
-    console.log(firebase)
     const db = firebase.database();
     var ref = db.ref(`/game/{{firebase_id}}`)
-    
+
     var room_code = document.getElementById('room_code')
     ref.on("child_changed", function (snapshot) {
         var data = snapshot.val();
@@ -131,14 +110,15 @@
     });
 
 
-    function getData(){
+    async function getData() {
         var user_two = document.getElementById('user_two')
         var room_code = document.getElementById('room_code')
-        ref.on('value' , function(snapshot){
-            console.log(snapshot.val());
+        console.log(user_two)
+        await ref.on('value', function (snapshot) {
+            console.log(snapshot.val())
             room_code.value = snapshot.val().room_code;
-            console.log(user_two)
             user_two.value = snapshot.val().user_two
+            console.log(user_two)
         })
     }
 
@@ -151,20 +131,31 @@
         document.execCommand("copy");
     }
 
-    function changeRoomCode(){
+    function changeRoomCode() {
         var room_code = document.getElementById('entered_room_code')
         room_code.disabled = false;
     }
 
     function writeRoomCode() {
         var room_code = document.getElementById('entered_room_code')
+
         console.log(room_code)
         const db = firebase.database();
         var ref = db.ref(`/game/{{firebase_id}}`)
-            ref.update({
-                room_code: room_code.value,      
+        ref.update({
+            room_code: room_code.value,
         });
         room_code.disabled = true;
+    }
+
+    function checkValue() {
+        var e = document.getElementById('result_check')
+        var upload_images = document.getElementById('upload_images')
+        if (e.value == 'WON' || e.value == 'CANCEL') {
+            upload_images.style.display = ''
+        } else {
+            upload_images.style.display = 'none'
+        }
     }
 </script>
 

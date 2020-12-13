@@ -167,9 +167,9 @@ def history(request):
         result['transaction'] = game.win_or_lost
         result['date'] = game.date
         if game.win_or_lost:
-            result['reason'] = 'Win from' + game.game.user_one.username +' vs '+ game.game.user_two.username
+            result['reason'] = 'Win from ' + game.game.user_one.username +' vs '+ game.game.user_two.username
         else:
-            result['reason'] = 'Loose from ' + game.game.user_one +' vs ' + game.game.user_two
+            result['reason'] = 'Loose from ' + game.game.user_one.username +' vs ' + game.game.user_two.username
         result['remark'] = 'Coins for game winning or loosing'
         results.append(result)
         
@@ -263,19 +263,23 @@ def all_games_api(request):
     #games_start = GameStart.objects.filter(game_status = 'PENDING').exclude(game_created_by=request.user)
     games = []
     
-    raw_running_games = Game.objects.all()[0:10]
+    raw_running_games = Game.objects.all().exclude(user_one = None).exclude(user_two = None).exclude(game_over='OVER')[0:10]
     running_games = []
+    print(raw_running_games)
     for raw in raw_running_games:
         game = {}
         game['game_amount'] = raw.betting_amount
-        game['between'] = raw.user_one.username + ' vs ' + raw.user_two.username
+        if raw.user_one is not None and  raw.user_two is not None:
+            game['between'] = raw.user_one.username + ' vs ' + raw.user_two.username
+        elif raw.user_one is not None:
+            game['between'] = raw.user_one.username + ' wants to play'
+        elif raw.user_two is not None:
+            game['between'] = raw.user_two.username + ' wants to play'
         running_games.append(game)    
-    
-    
     
     for gs in games_start:
         game = {}
-        game['game_created_by'] = gs.game_created_by.username + 'set a challenge for '
+        game['game_created_by'] = gs.game_created_by.username + ' set a challenge for '
         game['game_slug'] = gs.game_slug
         game['game_status'] = gs.game_status
         game['game_amount'] = gs.game_amount
@@ -288,6 +292,8 @@ def all_games_api(request):
         user_created_game['game_amount'] = game_by_user.game_amount
         user_created_game['game_slug'] = game_by_user.game_slug
         user_created_game['game_id'] = game_by_user.id
+        user_created_game['firebase_id'] = game_by_user.firebase_id
+        user_created_game['joined'] = False
         
         
     

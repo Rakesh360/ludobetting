@@ -127,9 +127,9 @@ class Game(models.Model):
     betting_amount = models.IntegerField(default=0)
     room_code = models.CharField(max_length=1000, null=True , blank=True)
     is_true = models.BooleanField(null=True , blank=True)
-    
+    game_over = models.CharField(max_length=100 , blank=True , null=True)
     def __str__(self):
-        return self.room_code
+        return self.game_start.game_slug
     
 class DisputedGame(models.Model):
     game = models.ForeignKey(Game, on_delete=models.PROTECT)
@@ -170,11 +170,13 @@ def win_loose_handler(sender, instance, *args, **kwargs):
 
 @receiver(post_save, sender=Game)
 def game_handler(sender, instance, *args, **kwargs):
+
     if instance.result_user_one or instance.result_user_two:
         game_start = GameStart.objects.get(id = instance.game_start.id)
         game_start.game_status = "OVER"
         game_start.save()
     if instance.result_user_one and instance.result_user_two:
+        instance.game_over = 'OVER'
         win_id = None
         lost_id = None
         if instance.result_user_one == 'WON' and instance.result_user_two == 'LOST':
