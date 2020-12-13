@@ -25,6 +25,16 @@ class UserInfoInline(admin.StackedInline):
     extra = 1
     max_num = 1
     min_num = 1
+    
+
+class userinfoAdmin(admin.ModelAdmin):
+    fields = ["user","whatsapp_number","available_coins","term_condition","otp","is_verified","referral_by"]
+
+    list_display = ["user","whatsapp_number","available_coins","term_condition","otp","is_verified","referral_by"]
+    search_fields = ["user", "whatsapp_number"]
+    list_filter = ["added_on", "is_verified"]
+    
+      
 
 
 class BetTransactionInline(admin.TabularInline):
@@ -76,7 +86,7 @@ admin.site.unregister(User)
 admin.site.register(User, LudoUserAdmin)
 
 admin.site.register(Contact_Us, Contact_UsAdmin)
-admin.site.register(User_info)
+admin.site.register(User_info, userinfoAdmin)
 
 admin.site.register(Add_coins, Add_coinsAdmin)
 admin.site.register(Sell_coins, Sell_coinsAdmin)

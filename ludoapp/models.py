@@ -18,7 +18,7 @@ TRANSACTION_STATUS = (
 
 class User_info(models.Model):
     user = models.OneToOneField(User, related_name='agreement', on_delete=models.CASCADE)
-    whatsapp_number = models.IntegerField()
+    whatsapp_number = models.CharField(max_length = 30)
     available_coins = models.IntegerField(default=50)
    
     term_condition = models.BooleanField(default=True)
